@@ -1,4 +1,4 @@
-# Tutorial-flask-login
+# Tutorial Flask-Login
 Tutorial Flask-Login in the course "316002 Entwicklung von Web-Anwendungen" 
 
 Professor: Prof. Dr. Alexander Eck
@@ -7,41 +7,60 @@ Winter Term 2022/23
 
 Submitted by Lana Aram 
 
+---
 
-# Foobar
+### *Disclaimer*
 
-Foobar is a Python library for dealing with word pluralization.
+This tutorial draws heavily from https://www.youtube.com/watch?v=dam0GPOAvVI&t=4255s. The code for the web-app has been mostly copied from here.
 
-## Installation
+I tested the code on my current Windows 11 machine, not on macOS, therefore I don't guarantee that it will work as described on a Mac.
 
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install foobar.
+---
 
-```bash
-pip install foobar
-```
+## Table of Contents
+---
+1. [Learning Objectives](#learning-objectives)
+2. [Assumptions](#assumptions)
+3. [Setup](#setup)
+4. [Hello, World](#hello)
+5. [Concept](#concept)
+6. [Follow-Ups & Sources](#sources)
 
-## Usage
+---
+## 1. Learning Objective  
+---
 
-```python
-import foobar
+The Learning Objectives are firstly to set up Python and Visual Studio Code. Then to create a running  Flask application that demonstrates and visualizes how Flask-Login can be used. By the end of this tutorial you should have a website, mostly written with Python, where a user can login and logout. Therefore, the user needs an account. In addition, the user can save notes in a list and only the notes of the logged in user are displayed. Come back here as often as you need, it serves as a beginner tutorial. Through this happy path you will understand how Flask-Login can be implemented. So let's dive in!
 
-# returns 'words'
-foobar.pluralize('word')
+To-Do:
+- [ ] Setting up Python and Visual Studio Code
+- [ ] Create a User Account
+- [ ] Store this data in a database
+- [ ] Login into the User Account and Logout 
+- [ ] Associate notes with a specific user
 
-# returns 'geese'
-foobar.pluralize('goose')
+---
+## 2. Assumptions
+---
 
-# returns 'phenomenon'
-foobar.singularize('phenomena')
-```
+I assume that you don't have Visual Studio Code installed on your computer and start from scratch. You don't need any prior knowledge about Flask-Login. 
 
-## Contributing
+It's best if you code while you read the tutorial, therefore you will implement a happy path while you are discovering new knowledge about Flask-Login.
 
-Pull requests are welcome. For major changes, please open an issue first
-to discuss what you would like to change.
+### What's in Scope:
 
-Please make sure to update tests as appropriate.
+- Flask built-in 
 
-## License
 
-[MIT](https://choosealicense.com/licenses/mit/)
+### What's out of Scope:
+
+- 
+
+---
+## 3. Setup
+---
+
+
+
+
+- [](https://www.example.com)
