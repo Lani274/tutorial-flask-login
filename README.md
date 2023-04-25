@@ -141,12 +141,16 @@ This example was taken from the notebook "03b - Full stack web dev intro noteboo
 
 This minimal Flask application launches the webserver. The result is a Flask-powered "Hello, World!" web app.
 
-What you see in the code: 
-- *@app.route()* is a Python decorator. Decorators take functions, extend them and return, so that a function can basically return a function. 
+*What you see in the code:* 
+*@app.route()* is a Python decorator. Decorators take functions, extend them and return, so that a function can basically return a function (vgl. Python Decorators Introduction - Python Tutorial n.d.). The most common use in Flask is to specify the URL route with that.
 
-Here's a sentence with a footnote.[^1]
+Save the changes with *Ctrl+S*. Click into your terminal and type 
 
-[^1]:This is the footnote.
+```bash
+flask run 
+```
+The Flask built-in development web server should show up. Now hold down *Ctrl* and *left-click* on the URL *127.0.0.1:5000*. It should open your standard browser at that URL with a *Hello, World!* message. 
+
 
 
 
@@ -166,3 +170,4 @@ Here's a sentence with a footnote.[^1]
 - https://www.youtube.com/watch?v=dam0GPOAvVI&t=4255s
 - notebook "03d - How to set up Python and VS Code" from the class "316002 Entwicklung von Web-Anwendungen" of Prof. Dr. Alexander Eck. 
 - the notebook "03b - Full stack web dev intro notebook" from the class "316002 Entwicklung von Web-Anwendungen" by Prof. Dr. Alexander Eck.
+- https://pythonbasics.org/decorators/
