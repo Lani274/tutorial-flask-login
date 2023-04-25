@@ -23,8 +23,9 @@ I tested the code on my current Windows 11 machine and show how it works on Wind
 2. [Assumptions](#assumptions)
 3. [Setup](#setup)
 4. [Hello, World!](#hello)
-5. [Concept](#concept)
-5.1 [What is Flask](#concept)
+5. [Begin with Flask-Login](#concept)
+5.1 [Create a Flask App ](#concept1)
+5.2 [What is Flask-Login](#concept2)
 6. [Follow-Ups & Sources](#sources)
 
 ---
@@ -151,12 +152,63 @@ flask run
 ```
 The Flask built-in development web server should show up. Now hold down *Ctrl* and *left-click* on the URL *127.0.0.1:5000*. It should open your standard browser at that URL with a *Hello, World!* message. 
 
+Inside the terminal type *pip install flask-login*. 
+After the installtion also type *pip install flask-sqlalchemy*. 
+We need these modules to use Flask-Login and Flask-Sqlalchemy to create database models. 
 
+----
+## 5. Begin with Flask-Login 
+-----
 
+Now that we have all the prerequisites we can begin with the actual web-app. With Flask-Login we have a Flask extension that allows to use user authentication functionality (vgl. Flask-Login — Flask-Login 0.7.0 documentation n.d.). 
 
+Firstly, we need to strucuture our directory structure. Delete the *app.py* file from the Hello, World example if you have done it. Inside our  */webapp* folder create new folders and files with this strucutre:
 
+* [static/](./website/static)
+  * [index.js](./website/static/index.js)
+* [templates/](./website/templates)
+  * [base.html](./website/templates/base.html)
+  * [home.html](./website/templates/home.html)
+  * [login.html](./website/templates/login.html)
+  * [sign_up.html](./website/templates/sign_up.html)
+* [__ pycache__/](./website/__pycache__)
+  * [auth.cpython-310.pyc](./website/__pycache__/auth.cpython-310.pyc)
+  * [models.cpython-310.pyc](./website/__pycache__/models.cpython-310.pyc)
+  * [views.cpython-310.pyc](./website/__pycache__/views.cpython-310.pyc)
+  * [__init__.cpython-310.pyc](./website/__pycache__/__init__.cpython-310.pyc)
+* [auth.py](./website/auth.py)
+* [models.py](./website/models.py)
+* [views.py](./website/views.py)
+* [__ init__.py](./website/__init__.py)
 
+Press *Shift+Ctrl+P* and start typing *terminal create new terminal*. Press Enter and a new terminal window should open in the lower part of your Environment.
 - [](https://www.example.com)
+
+
+----
+## 5.1 Begin with Flask-Login 
+-----
+
+Inside the *__ init__.py* file 
+```python
+from flask import Flask
+
+def create_app():
+    app = Flask(__name__)
+    app.config['SECRET_KEY'] = 'dsjkajeijw'
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
+    db.init_app(app)
+    
+```
+
+
+
+
+
+
+
+
+
 
 
 
@@ -171,3 +223,4 @@ The Flask built-in development web server should show up. Now hold down *Ctrl* a
 - notebook "03d - How to set up Python and VS Code" from the class "316002 Entwicklung von Web-Anwendungen" of Prof. Dr. Alexander Eck. 
 - the notebook "03b - Full stack web dev intro notebook" from the class "316002 Entwicklung von Web-Anwendungen" by Prof. Dr. Alexander Eck.
 - https://pythonbasics.org/decorators/
+- Flask-Login — Flask-Login 0.7.0 documentation (n.d.): [online] https://flask-login.readthedocs.io/en/latest/.
