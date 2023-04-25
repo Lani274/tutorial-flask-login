@@ -25,7 +25,8 @@ I tested the code on my current Windows 11 machine and show how it works on Wind
 4. [Hello, World!](#hello)
 5. [Begin with Flask-Login](#concept)
 5.1 [Create a Flask App ](#concept1)
-5.2 [What is Flask-Login](#concept2)
+5.2 [Create Routes/Views](#concept2)
+5.3 [](#concept3)
 6. [Follow-Ups & Sources](#sources)
 
 ---
@@ -143,7 +144,7 @@ This example was taken from the notebook "03b - Full stack web dev intro noteboo
 This minimal Flask application launches the webserver. The result is a Flask-powered "Hello, World!" web app.
 
 *What you see in the code:* 
-*@app.route()* is a Python decorator. Decorators take functions, extend them and return, so that a function can basically return a function (vgl. Python Decorators Introduction - Python Tutorial n.d.). The most common use in Flask is to specify the URL route with that.
+*@app.route()* is a Python decorator. Decorators take functions, extend them and return, so that a function can basically return a function (vgl. Python Decorators Introduction - Python Tutorial n.d.). The most common use in Flask is to specify the URL route with that. Every route is a certain page in the web app. 
 
 Save the changes with *Ctrl+S*. Click into your terminal and type 
 
@@ -162,7 +163,7 @@ We need these modules to use Flask-Login and Flask-Sqlalchemy to create database
 
 Now that we have all the prerequisites we can begin with the actual web-app. With Flask-Login we have a Flask extension that allows to use user authentication functionality (vgl. Flask-Login — Flask-Login 0.7.0 documentation n.d.). 
 
-Firstly, we need to strucuture our directory structure. Delete the *app.py* file from the Hello, World example if you have done it. Inside our  */webapp* folder create new folders and files with this strucutre:
+Firstly, we need to strucuture our directory structure. Delete the *app.py* file from the Hello, World example if you have done it. Inside our  */webapp* folder create new folders and files with this strucutre. Therefore your project folder */webapp* might look like this.
 
 * [static/](./website/static)
   * [index.js](./website/static/index.js)
@@ -171,37 +172,93 @@ Firstly, we need to strucuture our directory structure. Delete the *app.py* file
   * [home.html](./website/templates/home.html)
   * [login.html](./website/templates/login.html)
   * [sign_up.html](./website/templates/sign_up.html)
-* [__ pycache__/](./website/__pycache__)
-  * [auth.cpython-310.pyc](./website/__pycache__/auth.cpython-310.pyc)
-  * [models.cpython-310.pyc](./website/__pycache__/models.cpython-310.pyc)
-  * [views.cpython-310.pyc](./website/__pycache__/views.cpython-310.pyc)
-  * [__init__.cpython-310.pyc](./website/__pycache__/__init__.cpython-310.pyc)
 * [auth.py](./website/auth.py)
 * [models.py](./website/models.py)
 * [views.py](./website/views.py)
 * [__ init__.py](./website/__init__.py)
 
-Press *Shift+Ctrl+P* and start typing *terminal create new terminal*. Press Enter and a new terminal window should open in the lower part of your Environment.
-- [](https://www.example.com)
-
+Outside the */webapp* folder we need the file **main.py**, which is not shown above as it only shows the */webapp* folder. 
 
 ----
-## 5.1 Begin with Flask-Login 
+## 5.1 Create a Flask App
 -----
 
-Inside the *__ init__.py* file 
+Inside the *__ init__.py* file type
+
 ```python
 from flask import Flask
 
-def create_app():
-    app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'dsjkajeijw'
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
-    db.init_app(app)
+def create_app(): #define function create_app()
+    app = Flask(__name__) #initialize the app
+    app.config['SECRET_KEY'] = 'dsjkajeijw' #encrypt the session data related to our web-app
     
+    return app
+```
+We created the flask app and defined the function create_app() which returns the app.
+
+Go to *main.py*
+
+```python
+from website import create_app
+
+app = create_app()
+
+if __name__ == '__main__':
+    app.run(debug=True)
 ```
 
+We now import our website package, or what might be called webapp in your case, and grab that create_app function from  the *__ init__.py* file and use that to actually create an application which can be run. 
+*if __ name__ == '__ main__':* etc.
+states that I only want to run the web server if we run the *main.py* file. It also means that everytime we will make a change in our Python code, it will automatically run the webserver (vgl. How to debug a Flask app n.d.). 
 
+
+----
+## 5.2 Create Routes/Views 
+-----
+
+Go into the views.py file. There we will create our routes so our user can navigate through different pages. And type in this code.  
+
+```python
+from flask import Blueprint
+
+views = Blueprint('views', __name__)
+
+@views.route('/')
+def home(): # this function will run whenever we go to the slash route (our main page) and it will run 
+
+```
+We created a Blueprint object called views and we can now add views to the Blueprint object using the route decorator. If you want to know more about using Blueprint [read more on this page](https://realpython.com/flask-blueprint/#what-a-flask-application-looks-like).
+
+Do the same thing in *auth.py* but change the Blueprint object into *auth.py*. 
+
+```python
+from flask import Blueprint
+
+auth = Blueprint('auth', __name__)
+```
+
+Inside the *__ init__.py* file 
+we need to tell this file that we have blueprints containing different views for our application. 
+
+Your *__ init__.py* file  should now look like this: 
+```python
+from flask import Flask
+
+def create_app(): 
+    app = Flask(__name__) 
+    app.config['SECRET_KEY'] = 'dsjkajeijw'
+
+    from .views import views
+    from .auth import auth
+
+    app.register_blueprint(views, url_prefix='/')
+    app.register_blueprint(auth, url_prefix='/')
+    
+    return app
+```
+We are basically now importing the Blueprint object from *views.py* which is called views and also from *auth.py*. Then we need to register them into our flask application with register_blueprint(). When a Flask Blueprint is registered, the application is extended with its contents (vgl. Python 2021). 
+
+You can now run your webserver by going to your main.py file and
 
 
 
@@ -224,3 +281,5 @@ def create_app():
 - the notebook "03b - Full stack web dev intro notebook" from the class "316002 Entwicklung von Web-Anwendungen" by Prof. Dr. Alexander Eck.
 - https://pythonbasics.org/decorators/
 - Flask-Login — Flask-Login 0.7.0 documentation (n.d.): [online] https://flask-login.readthedocs.io/en/latest/.
+- How to debug a Flask app (n.d.): Stack Overflow, [online] https://stackoverflow.com/questions/17309889/how-to-debug-a-flask-app.
+- Python, Real (2021): Use a Flask Blueprint to Architect Your Applications, in: realpython.com, [online] https://realpython.com/flask-blueprint/#what-a-flask-application-looks-like.
