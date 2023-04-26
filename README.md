@@ -1,4 +1,4 @@
-# Tutorial Flask-Login
+# Tutorial Flask-Login Usage
 Tutorial Flask-Login in the course "316002 Entwicklung von Web-Anwendungen" 
 
 Professor: Prof. Dr. Alexander Eck
@@ -706,7 +706,7 @@ def sign_up():
 # if this return  a user, the email already exist
          user= User.query.filter_by(email=email).first()
 
-         if user:
+         if user: # if the user already exists than we will flash an error, because he cant sign in again
              flash('Email already exists.', category='error')
 
          elif len(email) < 4:
@@ -735,7 +735,7 @@ Here we check if the data that the user submitted to the form is correct, if val
 ### 6.3 Adding the Login Method
 ---
 
-Now go to your *auth.py* file:
+Now go to your *auth.py* file and look at the login:
 
 ```python
 from flask import Blueprint, render_template, request, flash, redirect, url_for # add
@@ -747,50 +747,59 @@ auth = Blueprint('auth', __name__)
 
 @auth.route(/login, methods=['GET', 'POST']) 
 def login():
-    return render_template("login.html") 
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
 
-@auth.route(/logout)
-def logout():
-    return "<p>Logout</p>"
+        user = User.query.filter_by(email=email).first()
+        if user:# if we actually find a user
+            if check_password_hash(user.password, password):
+                flash('Logged in successfully!', category='success')
+                login_user(user, remember=True)
+                return redirect(url_for('views.home'))
+            else: # if password is not correct
+                flash('Incorrect password, try again.', category='error')
+        else:# if user does not exists with an email
+            flash('Email does not exist.', category='error')
 
-@auth.route(/sign-up, methods=['GET', 'POST'])
-def sign_up():
-         if request.method == 'POST':
-         email = request.form.get('email')
-         first_name = request.form.get('firstName')
-         password1 = request.form.get('password1')
-         password2 = request.form.get('password2')
-# if this return  a user, the email already exist
-         user= User.query.filter_by(email=email).first()
+    return render_template("login.html", user=current_user)
+```
+The user now can sign up but we also want the user to log in with an already existing account. Firstly, we want to get the email and the password from the form. Then we want to check if the email is actually valid and that an user belongs to this email. In the User model we will filter_by() with an query, that finds all the users that have the email, that was in the field. If we then actually find an user, we need to check if the password typed in is equal to the hashed one. If the user is logged in successfully then it will redirect the user to the home page.  
 
-         if user:
-             flash('Email already exists.', category='error')
+What we want to do now is to only let a logged in user access the home page with his personal notes. Moreover, we want the Login and Sign Up in the navbar to go away, if the User is already logged in, so that it will only show Home and Logout. 
 
-         elif len(email) < 4:
-             flash('Email must be greater than 3 characters.', category='error')
-         elif len(first_name) < 2:
-             flash('First name must be greater than 1 character.', category='error')
-         elif password1 != password2:
-             flash('Passwords dont match.', category='error')
-         elif len(password1) < 7:
-             flash('Password must be at least 7 characters.', category='error')
-         else: # add
-            # create a new user and hash the password
-             new_user= User(email=email, first_name=first_name, password=generate_password_hash(password1, method='sha256'))
-             # add the new user to the database
-             db.session.add(new_user)
-             db.session.commit()
-             login_user(user, remember=True)
-             flash('Account created!', category='success')
-             return redirect(url_for('views.home')) # if user is found, it gets redirected back to the home page, we map which function links to the url
- 
-     return render_template("sign_up.html", user=current_user) 
+For that go to your *auth.py* file
+```python
+from flask import Blueprint, render_template, request, flash, redirect, url_for 
+from .models import User 
+from werkzeug.security import generate_password_hash, check_password_hash
+from . import db
+# add Flask Login Module
+from flask_login import login_user, login_required, logout_user, current_user
+
+auth = Blueprint('auth', __name__)
+
+@auth.route(/login, methods=['GET', 'POST']) 
+def login():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        user = User.query.filter_by(email=email).first()
+        if user:
+            if check_password_hash(user.password, password):
+                flash('Logged in successfully!', category='success')
+                login_user(user, remember=True)
+                return redirect(url_for('views.home'))
+            else: 
+                flash('Incorrect password, try again.', category='error')
+        else:
+            flash('Email does not exist.', category='error')
+
+    return render_template("login.html", user=current_user)
 ```
 
-
-
-
-
+We needed UserMixin before so that we can have all the information of the current_user that we added through the Flask Login Module. 
 
 
 
