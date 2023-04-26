@@ -11,42 +11,44 @@ Submitted by Lana Aram
 
 ### *Disclaimer*
 
-This tutorial draws heavily from [this video](https://www.youtube.com/watch?v=dam0GPOAvVI&t=4255s). The code for the web-app has been mostly copied from here.
+This tutorial draws heavily from [this video](https://www.youtube.com/watch?v=dam0GPOAvVI&t=4255s). The code for the web-app has been mostly copied from this tutorial.
 
-I tested the code on my current Windows 11 machine and show how it works on Windows, not on macOS, therefore I don't guarantee that it will work as described on a Mac. If you have a Mac you might need to research further sources.
+I tested the code on my current Windows 11 machine and I will show in this tutorial how it works on Windows, not on macOS, therefore I don't guarantee that it will work as described on a Mac. If you have a Mac you might need to research further sources.
 
 ---
 
 ## Table of Contents
 ---
+
 1. [Learning Objectives](#learning-objectives)
 2. [Assumptions](#assumptions)
 3. [Setup](#setup)
 4. [Hello, World!](#hello)
-5. [Begin with Flask-Login](#concept)
-5.1 [Create a Flask App ](#concept1)
-5.2 [Create Routes/Views](#concept2)
-5.3 [](#concept3)
+5. [Flask-Login Web App](#concept)
+    - [Create a Flask App ](#concept1)
+    - [Create Routes/Views](#concept2)
+    - [Jinja Templating Language & HTML Templates](#concept3)
 6. [Follow-Ups & Sources](#sources)
 
 ---
 ## 1. Learning Objective  
 ---
 
-The Learning Objectives are firstly to set up Python and Visual Studio Code. Then to create a running  Flask application that demonstrates and visualizes how Flask-Login can be used. By the end of this tutorial you should have a website, mostly written with Python, where a user can login and logout. Therefore, the user needs an account. In addition, the user can save notes in a list and only the notes of the logged in user are displayed. Come back here as often as you need, it serves as a beginner tutorial. Through this happy path you will understand how Flask-Login can be implemented. So let's dive in!
+The Learning Objectives are firstly to set up Python and Visual Studio Code. Then to create a running  Flask application that demonstrates and visualizes how Flask-Login can be used. By the end of this tutorial, you should have a website, mostly written with Python, where a user can login and logout. Therefore, the user needs an account which is stored in a database. In addition, the user can save notes in a list and only the notes of the logged in user are displayed. The goal is that you will not only understand Flask-Login, but also how basic-mechanisms for Python Web Applications are used. Come back here as often as you need, it serves as a beginner tutorial. Through this happy path you will understand how Flask-Login can be implemented into a web app. So, let's dive in!
 
 To-Do:
 - [ ] Setting up Python and Visual Studio Code
-- [ ] Create a User Account
+- [ ] Launching a web server
+- [ ] Create a user account
 - [ ] Store this data in a database
-- [ ] Login into the User Account and Logout 
+- [ ] Login into the user account and logout 
 - [ ] Associate notes with a specific user
 
 ---
 ## 2. Assumptions
 ---
 
-I assume that you don't have Visual Studio Code installed on your computer and start from scratch. You don't need any prior knowledge about Flask-Login. But it is beneficial if you have some knowledge about Python or Java, or in general programming languages that support object-oriented programming.  
+I assume that you don't have Visual Studio Code installed on your computer and start from scratch. You don't need any prior knowledge about Flask-Login. But it is beneficial if you have some knowledge about Python or Java, or in general programming languages that support object-oriented programming. I also assume that you have a basic understanding of HTML and CSS.  
 
 It's best if you code while you read the tutorial, therefore you will implement a happy path while you are discovering new knowledge about Flask-Login.
 
@@ -75,7 +77,7 @@ By completing this setup you will have all the prerequisites to further follow t
 You need to create a new folder    */webapp*. Your full path on Windows might then look like *C:\Users\me\projects\webapp*
 
 #### **Create a Python Virtual Environment and install Flask**
-It is very likely that you now have your Explorer window open in the */webapp* folder. If you have German Windows press from there Alt+D. Next, press P. It will open the Windows terminal application that is called "PowerShell". 
+It is very likely that you now have your Explorer window open in the */webapp* folder. If you have German Windows press Alt+D. Next, press P. It will open the Windows terminal application that is called "PowerShell". 
 
 With your terminal window open, type:
 ````
@@ -155,7 +157,7 @@ The Flask built-in development web server should show up. Now hold down *Ctrl* a
 
 Inside the terminal type *pip install flask-login*. 
 After the installtion also type *pip install flask-sqlalchemy*. 
-We need these modules to use Flask-Login and Flask-Sqlalchemy to create database models. 
+We need these modules to use Flask-Login and Flask-Sqlalchemy to later create database models. 
 
 ----
 ## 5. Begin with Flask-Login 
@@ -183,7 +185,7 @@ Outside the */webapp* folder we need the file **main.py**, which is not shown ab
 ## 5.1 Create a Flask App
 -----
 
-Inside the *__ init__.py* file type
+Inside the *__ init__.py* extend with the following code:
 
 ```python
 from flask import Flask
@@ -196,7 +198,7 @@ def create_app(): #define function create_app()
 ```
 We created the flask app and defined the function create_app() which returns the app.
 
-Go to *main.py*
+Go to *main.py*.
 
 ```python
 from website import create_app
@@ -209,14 +211,14 @@ if __name__ == '__main__':
 
 We now import our website package, or what might be called webapp in your case, and grab that create_app function from  the *__ init__.py* file and use that to actually create an application which can be run. 
 *if __ name__ == '__ main__':* etc.
-states that I only want to run the web server if we run the *main.py* file. It also means that everytime we will make a change in our Python code, it will automatically run the webserver (vgl. How to debug a Flask app n.d.). 
+states that I only want to run the web server if we run the *main.py* file. app.run(debug=True) means that everytime we will make a change in our Python code, it will automatically run the webserver (vgl. How to debug a Flask app n.d.). 
 
 
 ----
 ## 5.2 Create Routes/Views 
 -----
 
-Go into the views.py file. There we will create our routes so our user can navigate through different pages. And type in this code.  
+Go into the *views.py* file. There we will create our routes so that our user can navigate through different pages in our web app. Extend with the following code. 
 
 ```python
 from flask import Blueprint
@@ -224,12 +226,12 @@ from flask import Blueprint
 views = Blueprint('views', __name__)
 
 @views.route('/')
-def home(): # this function will run whenever we go to the slash route (our main page) and it will run 
+def home(): # this function will run whenever we go to the slash route (our main page)
 
 ```
 We created a Blueprint object called views and we can now add views to the Blueprint object using the route decorator. If you want to know more about using Blueprint [read more on this page](https://realpython.com/flask-blueprint/#what-a-flask-application-looks-like).
 
-Do the same thing in *auth.py* but change the Blueprint object into *auth.py*. 
+Do the same thing in *auth.py* but change the Blueprint object into *auth*. 
 
 ```python
 from flask import Blueprint
@@ -256,17 +258,195 @@ def create_app():
     
     return app
 ```
-We are basically now importing the Blueprint object from *views.py* which is called views and also from *auth.py*. Then we need to register them into our flask application with register_blueprint(). When a Flask Blueprint is registered, the application is extended with its contents (vgl. Python 2021). 
+We are now basically importing the Blueprint object from *views.py* which is called views and also from *auth.py* which is called auth. Then we need to register them into our flask application with register_blueprint(). When a Flask Blueprint is registered, the application is extended with its contents (vgl. Python 2021). 
 
-You can now run your webserver by going to your main.py file and
+Back to our *auth.py* file extend with this code: 
+
+```python
+from flask import Blueprint
+
+auth = Blueprint('auth', __name__)
+
+@auth.route(/login)
+def login():
+    return "<p>Login</p>"
+
+@auth.route(/logout)
+def logout():
+    return "<p>Logout</p>"
+
+@auth.route(/sign-up)
+def sign_up():
+    return "<p>Sign Up</p>"
+```
+
+You can now run your webserver by going to your main.py file and clicking on the run button on the right-hand corner. What the above code is intented to do, is to create a navigation for the user through our web app. If you go to the URL bar, in your opened up standard browser, at the top and change the last "/" to "/sign-up", it will go to our Signup page for our user. It will also show the output of the sign_up() function in your browser. You can also do that with "/login" and "/logout".This mechanism is called Routing (vgl. Python - Routing n.d.).  
+
+---
+## 5.3 Jinja Templating Language & HTML Templates
+---
+
+Jinja2 is a python HTML template engine, which means that HTML documents will be combined with data. It is installed with Flask. Jinja2 offers many options for formatting data in the HTML file (vgl. Admin 2021). Inside our template folder we created a base.html file, which is the base templated and creates the theme of the web app. The other files in the templates folder will then override parts of the base.html with more specific parts (vgl. Admin 2021). 
+
+Extend *base.html* with this code (it is best to copy it):
+
+```html
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+            />
+        <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+      crossorigin="anonymous"
+            />        
+        <title>{% block title %}Home{% endblock %}</title>
+    </head>
+</html>
+```
+I will not dive deep into HTML and CSS stylesheets as this is not part of this tutorial. However, we imported bootstrap into the code, which is a CSS framework which allows to use pre-build classes for our website design (vgl. Contributors n.d.). The links allow to load custom CSS content and classes, without downloading a specific file. We can then use them into our HTML file. Inside the *{%%}* (called Delimiters) you can actually write Python code, like if statements (vgl. Basic Syntax of Jinja n.d.). With *block title* we create the Home title of our page, which then can be overriden in another template e.g. Login, where the title needs to be changed (vgl. Jinja2 Default Page Title n.d.).  
 
 
+Under the end head tag continue with this code, which are JavaScript scripts, inside the body tags: 
+```html
+    <body>
+        <script
+      src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+      integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      crossorigin="anonymous"
+    ></script>
+
+    <script>
+      type="text/javascript"
+      src="{{ url_for('static', filename='index.js')}}"
+    </script>
+    </body>
+</html>
+```
+Above the script tags, but inside the body tags, continue with extending this code:
+```html
+
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar">
+              <span class="navbar-toggler-icon"></span>
+          </button>
+        <div class="collapse navbar-collapse" id="navbar">
+          <div class="navbar-nav">
+            {% if user.is_authenticated %}
+            <a class="nav-item nav-link" id="home" href="/">Home</a>
+            <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>
+            {% else %}
+            <a class="nav-item nav-link" id="login" href="/login">Login</a>
+            <a class="nav-item nav-link" id="signUp" href="/sign-up">Sign Up</a>
+            {% endif %}
+          </div>
+        </div>
+      </nav>
+```
+This code will create a navigation bar which links to the different pages. 
+Underneath the end nav tag continue with this code:
+```html
+      <div class="container">
+        {% block content %}
+        {% endblock %}
+      </div>
+```
+
+Go to *home.html*, where we will extend the *base.html* template witht he following code. *home.html* can now override *base.html* (vgl. Template Inheritance — Jinja Documentation n.d.). 
+
+!!!!!!!!!!!!!!!!!!!!!
+```html
+{% extends "base.html" %} {% block title %}Home{% endblock %}
+
+{% block content %}
+<h1>This is the home page</h1>
+{% endblock %}
+```
 
 
+Inside the *views.py* file add this code, so that the *home.html* template will be returned.
+
+```python
+from flask import Blueprint
+,render template #add this code
+
+views = Blueprint('views', __name__)
+
+@views.route('/')
+def home(): 
+    return render_template("home.html") # add this code
+```
 
 
+We will now look at the *login.html* and *sign_up.html* file. Go into *login.html* and add this code:
+
+````html
+{% extends "base.html" %} {% block title %}Login{% endblock %}
+
+{% block content %}
+<h1>This is the login page</h1>
+{% endblock %}
+````
 
 
+Go to *sign_up.html* and add the similar code.
+
+````html
+{% extends "base.html" %} {% block title %}Sign Up{% endblock %}
+
+{% block content %}
+<h1>This is the sign up page</h1>
+{% endblock %}
+````
+
+
+Inside of *auth.py* we don't want the html code inside, but instead our templates. Replace the *p* tags with render_tenplate().
+Also add the code shown in the comments:
+```python
+from flask import Blueprint, render_template # add this
+
+auth = Blueprint('auth', __name__)
+
+@auth.route(/login)
+def login():
+    return render_template("login.html") # replace p tag with this code
+
+@auth.route(/logout)
+def logout():
+    return "<p>Logout</p>"
+
+@auth.route(/sign-up)
+def sign_up():
+    return render_template("sign_up.html") # replace p tag with this code
+```
+
+
+Go to *sign_up.html* and change the *h1* tags with this code.
+
+````html
+{% extends "base.html" %} {% block title %}Sign Up{% endblock %}
+
+{% block content %}
+<h1>This is the sign up page</h1>
+{% endblock %}
+````
 
 
 
@@ -283,3 +463,9 @@ You can now run your webserver by going to your main.py file and
 - Flask-Login — Flask-Login 0.7.0 documentation (n.d.): [online] https://flask-login.readthedocs.io/en/latest/.
 - How to debug a Flask app (n.d.): Stack Overflow, [online] https://stackoverflow.com/questions/17309889/how-to-debug-a-flask-app.
 - Python, Real (2021): Use a Flask Blueprint to Architect Your Applications, in: realpython.com, [online] https://realpython.com/flask-blueprint/#what-a-flask-application-looks-like.
+- Python - Routing (n.d.): [online] https://www.tutorialspoint.com/python_network_programming/python_routing.htm.
+- Admin (2021): Flask Templates with Jinja2 Explained in Detail | GoLinuxCloud, in: GoLinuxCloud, [online] https://www.golinuxcloud.com/flask-template/.
+- Contributors, Mark Otto Jacob Thornton, and Bootstrap (n.d.): Introduction, [online] https://getbootstrap.com/docs/5.0/getting-started/introduction/.
+- Basic Syntax of Jinja (n.d.): Engagement, [online] https://documentation.bloomreach.com/engagement/docs/jinja-syntax.
+- Jinja2 Default Page Title (n.d.): Stack Overflow, [online] https://stackoverflow.com/questions/12339324/jinja2-default-page-title#:~:text=Use%20a%20block%3A%20%3Ctitle%3E%20%7B%25%20block%20title%20%25%7D,template%20if%20you%20want%20to%20change%20the%20title.
+-Template Inheritance — Jinja Documentation (n.d.): [online] https://svn.python.org/projects/external/Jinja-1.1/docs/build/inheritance.html.
