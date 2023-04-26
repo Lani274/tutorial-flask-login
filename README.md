@@ -11,7 +11,7 @@ Submitted by Lana Aram
 
 ### *Disclaimer*
 
-This tutorial draws heavily from [this video](https://www.youtube.com/watch?v=dam0GPOAvVI&t=4255s). The code for the web-app has been mostly copied from this tutorial.
+This tutorial draws heavily from [this video](https://www.youtube.com/watch?v=dam0GPOAvVI&t=4255s). The code for the web app has been mostly copied from this tutorial.
 
 I tested the code on my current Windows 11 machine and I will show in this tutorial how it works on Windows, not on macOS, therefore I don't guarantee that it will work as described on a Mac. If you have a Mac you might need to research further sources.
 
@@ -24,10 +24,11 @@ I tested the code on my current Windows 11 machine and I will show in this tutor
 2. [Assumptions](#assumptions)
 3. [Setup](#setup)
 4. [Hello, World!](#hello)
-5. [Flask-Login Web App](#concept)
+5. [Create the base for the Web App](#concept)
     - [Create a Flask App ](#concept1)
     - [Create Routes/Views](#concept2)
     - [Jinja Templating Language & HTML Templates](#concept3)
+
 6. [Follow-Ups & Sources](#sources)
 
 ---
@@ -160,7 +161,7 @@ After the installtion also type *pip install flask-sqlalchemy*.
 We need these modules to use Flask-Login and Flask-Sqlalchemy to later create database models. 
 
 ----
-## 5. Begin with Flask-Login 
+## 5. Create the base for the Web App 
 -----
 
 Now that we have all the prerequisites we can begin with the actual web-app. With Flask-Login we have a Flask extension that allows to use user authentication functionality (vgl. Flask-Login — Flask-Login 0.7.0 documentation n.d.). 
@@ -215,7 +216,7 @@ states that I only want to run the web server if we run the *main.py* file. app.
 
 
 ----
-## 5.2 Create Routes/Views 
+## 5.2 Create Routes/ Views 
 -----
 
 Go into the *views.py* file. There we will create our routes so that our user can navigate through different pages in our web app. Extend with the following code. 
@@ -417,7 +418,7 @@ Go to *sign_up.html* and add the similar code.
 ````
 
 
-Inside of *auth.py* we don't want the html code inside, but instead our templates. Replace the *p* tags with render_tenplate().
+Inside of *auth.py* we don't want the html code inside, but instead our templates. Replace the *p* tags with render_template().
 Also add the code shown in the comments:
 ```python
 from flask import Blueprint, render_template # add this
@@ -437,16 +438,136 @@ def sign_up():
     return render_template("sign_up.html") # replace p tag with this code
 ```
 
-
-Go to *sign_up.html* and change the *h1* tags with this code.
+Go to *sign_up.html* and replace the *h1* tags with this code.
 
 ````html
 {% extends "base.html" %} {% block title %}Sign Up{% endblock %}
 
 {% block content %}
-<h1>This is the sign up page</h1>
+<form method="POST">
+    <h3 align="center">Sign Up</h3>
+    <div class="form-group">
+        <label for="email">Email Adress</label>
+        <input type="email" class="form-control" id="email" name="email" placeholder="Enter email"/>
+    </div>
+    <div class="form-group">
+        <label for="firstName">First Name</label>
+        <input type="text" class="form-control" id="firstName" name="firstName" placeholder="Enter first name"/>
+    </div>
+    <div class="form-group">
+        <label for="password1">Password</label>
+        <input type="password" class="form-control" id="password1" name="password1" placeholder="Enter password"/>
+    </div>
+    <div class="form-group">
+        <label for="password2">Password (Confirm)</label>
+        <input type="password" class="form-control" id="password2" name="password2" placeholder="Confirm password"/>
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
 {% endblock %}
 ````
+This code will create four labels for our sign up page and also four fields to let the user enter his email, first name and password. We will also have a submit button. 
+
+Now go to *login.html* and replace the h1 tag with the following code:
+
+````html
+{% extends "base.html" %} {% block title %}Login{% endblock %}
+
+{% block content %}
+<form method="POST">
+    <h3 align="center">Login</h3>
+    <div class="form-group">
+        <label for="email">Email Adress</label>
+        <input type="email" class="form-control" id="email" name="email" placeholder="Enter email"/>
+    </div>
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" id="password" name="password" placeholder="Enter password"/>
+    </div>
+    
+    <br />
+    <button type="submit" class="btn btn-primary">Login</button>
+</form>
+{% endblock %}
+````
+With this code the user now can see fields for his email and password, but also a submit button. 
+Moreover, the POST-method is a HTTP request, which allows to send the information, put in by the user into the fields, to our server. We do that by clicking on the submit button. If you want to know more about HTTP requests look [here](https://www.ionos.de/digitalguide/hosting/hosting-technik/http-request-erklaert/). 
+
+Inside of *auth.py* we want to now handle these post requests. Extend your code:
+
+```python
+from flask import Blueprint, render_template, request, flash # add this
+
+auth = Blueprint('auth', __name__)
+
+@auth.route(/login, methods=['GET', 'POST']) # add code
+def login():
+    return render_template("login.html") 
+
+@auth.route(/logout)
+def logout():
+    return "<p>Logout</p>"
+
+@auth.route(/sign-up, methods=['GET', 'POST'])# add code
+def sign_up():# add following code
+         if request.method == 'POST':
+         email = request.form.get('email')
+         first_name = request.form.get('firstName')
+         password1 = request.form.get('password1')
+         password2 = request.form.get('password2')
+
+if user:
+             flash('Email already exists.', category='error')
+
+         elif len(email) < 4:
+             flash('Email must be greater than 3 characters.', category='error')
+         elif len(first_name) < 2:
+             flash('First name must be greater than 1 character.', category='error')
+         elif password1 != password2:
+             flash('Passwords dont match.', category='error')
+         elif len(password1) < 7:
+             flash('Password must be at least 7 characters.', category='error')
+    return render_template("sign_up.html") 
+```
+What we do now is to check, if the information submitted by the user is correct, but we also want to warn or alert them with Message Flashing, if something goes wrong. We need to import flash and use the flash() function. We categorize them into error, so that the messages have a red color. For more information on Message Flashing with Flask look [here](https://flask.palletsprojects.com/en/2.0.x/patterns/flashing/). 
+
+Go to the *base.html* file and write this code under the nav end tag. 
+
+````html
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+     {% for category, message in messages %}
+     {% if category == 'error' %}
+     <div class="alert alert-danger alter-dismissable fade show" role="alert">
+      {{ message }}
+      <button type="button" class="close" data-dismiss="alert">
+        <span aria-hidden="true">&times;</span>
+      </button>
+     </div>
+     {% else %}
+     <div class="alert alert-success alter-dismissable fade show" role="alert">
+      {{ message }}
+      <button type="button" class="close" data-dismiss="alert">
+        <span aria-hidden="true">&times;</span>
+      </button>
+     </div>
+     {% endif%}
+     {% endfor %}
+    {% endif %}
+    {% endwith %}
+````
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -469,3 +590,4 @@ Go to *sign_up.html* and change the *h1* tags with this code.
 - Basic Syntax of Jinja (n.d.): Engagement, [online] https://documentation.bloomreach.com/engagement/docs/jinja-syntax.
 - Jinja2 Default Page Title (n.d.): Stack Overflow, [online] https://stackoverflow.com/questions/12339324/jinja2-default-page-title#:~:text=Use%20a%20block%3A%20%3Ctitle%3E%20%7B%25%20block%20title%20%25%7D,template%20if%20you%20want%20to%20change%20the%20title.
 -Template Inheritance — Jinja Documentation (n.d.): [online] https://svn.python.org/projects/external/Jinja-1.1/docs/build/inheritance.html.
+- Der HTTP-Request einfach erklärt (2020): IONOS Digital Guide, [online] https://www.ionos.de/digitalguide/hosting/hosting-technik/http-request-erklaert/.
