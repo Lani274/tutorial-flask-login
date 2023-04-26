@@ -26,16 +26,20 @@ I tested the code on my current Windows 11 machine and I will show in this tutor
 4. [Hello, World!](#hello)
 5. [Create the base for the Web App](#concept)
     - [Create a Flask App ](#concept1)
-    - [Create Routes/Views](#concept2)
+    - [Create Routes/ Views](#concept2)
     - [Jinja Templating Language & HTML Templates](#concept3)
+6. [Flask-Login](#concept)
+    - [Database Models ](#concept1)
+    - [Creating New User Accounts](#concept2)
+    - [Adding the Login Method](#concept3)
 
-6. [Follow-Ups & Sources](#sources)
+7. [Follow-Ups & Sources](#sources)
 
 ---
 ## 1. Learning Objective  
 ---
 
-The Learning Objectives are firstly to set up Python and Visual Studio Code. Then to create a running  Flask application that demonstrates and visualizes how Flask-Login can be used. By the end of this tutorial, you should have a website, mostly written with Python, where a user can login and logout. Therefore, the user needs an account which is stored in a database. In addition, the user can save notes in a list and only the notes of the logged in user are displayed. The goal is that you will not only understand Flask-Login, but also how basic-mechanisms for Python Web Applications are used. Come back here as often as you need, it serves as a beginner tutorial. Through this happy path you will understand how Flask-Login can be implemented into a web app. So, let's dive in!
+The Learning Objectives are firstly to set up Python and Visual Studio Code. Then to create a running  Flask application that demonstrates and visualizes how Flask-Login can be used. By the end of this tutorial, you should have a website, mostly written with Python, where a user can login and logout. Therefore, the user needs an account which is stored in a database. In addition, the user can save notes in a list and only the notes of the logged in user are displayed. The goal is that you will not only understand Flask-Login, but also know how basic-mechanisms of Python are used. Come back here as often as you need, it serves as a beginner tutorial which can be implemented in  more web apps. Through this happy path you will understand how Flask-Login can be implemented into a web app. So, let's dive in!
 
 To-Do:
 - [ ] Setting up Python and Visual Studio Code
@@ -183,7 +187,7 @@ Firstly, we need to strucuture our directory structure. Delete the *app.py* file
 Outside the */webapp* folder we need the file **main.py**, which is not shown above as it only shows the */webapp* folder. 
 
 ----
-## 5.1 Create a Flask App
+### 5.1 Create a Flask App
 -----
 
 Inside the *__ init__.py* extend with the following code:
@@ -216,7 +220,7 @@ states that I only want to run the web server if we run the *main.py* file. app.
 
 
 ----
-## 5.2 Create Routes/ Views 
+### 5.2 Create Routes/ Views 
 -----
 
 Go into the *views.py* file. There we will create our routes so that our user can navigate through different pages in our web app. Extend with the following code. 
@@ -284,7 +288,7 @@ def sign_up():
 You can now run your webserver by going to your main.py file and clicking on the run button on the right-hand corner. What the above code is intented to do, is to create a navigation for the user through our web app. If you go to the URL bar, in your opened up standard browser, at the top and change the last "/" to "/sign-up", it will go to our Signup page for our user. It will also show the output of the sign_up() function in your browser. You can also do that with "/login" and "/logout".This mechanism is called Routing (vgl. Python - Routing n.d.).  
 
 ---
-## 5.3 Jinja Templating Language & HTML Templates
+### 5.3 Jinja Templating Language & HTML Templates
 ---
 
 Jinja2 is a python HTML template engine, which means that HTML documents will be combined with data. It is installed with Flask. Jinja2 offers many options for formatting data in the HTML file (vgl. Admin 2021). Inside our template folder we created a base.html file, which is the base templated and creates the theme of the web app. The other files in the templates folder will then override parts of the base.html with more specific parts (vgl. Admin 2021). 
@@ -532,7 +536,7 @@ if user:
 ```
 What we do now is to check, if the information submitted by the user is correct, but we also want to warn or alert them with Message Flashing, if something goes wrong. We need to import flash and use the flash() function. We categorize them into error, so that the messages have a red color. For more information on Message Flashing with Flask look [here](https://flask.palletsprojects.com/en/2.0.x/patterns/flashing/). 
 
-Go to the *base.html* file and write this code under the nav end tag. 
+For that, go to the *base.html* file and write this code under the nav end tag.
 
 ````html
 {% with messages = get_flashed_messages(with_categories=true) %}
@@ -557,10 +561,231 @@ Go to the *base.html* file and write this code under the nav end tag.
     {% endif %}
     {% endwith %}
 ````
+We now can message the user, if something went wrong. 
 
+---
+## 6. Flask-Login 
+---
+---
+### 6.1 Database Models
+---
 
+Go into your *__ init__.py* file and add the following code: 
 
+````python
 
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy #add
+
+db = SQLAlchemy() #add the following code
+DB_NAME = "database.db"
+
+def create_app(): 
+    app = Flask(__name__) 
+    app.config['SECRET_KEY'] = 'dsjkajeijw' # add the following code
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
+    db.init_app(app) 
+
+    from .views import views
+    from .auth import auth
+
+    app.register_blueprint(views, url_prefix='/')
+    app.register_blueprint(auth, url_prefix='/')
+    
+    return app
+````
+Our database name is now called *database.db* and we have the database object called db. With db.init_app(app) we will take the database object and link it to our flask app (vgl. Tech With Tim 2021b). 
+
+Inside our *models.py* file we will create our database models. We want to have two database models, one for our users and one for our notes. 
+````python
+from . import db
+from flask_login import UserMixin
+from sqlalchemy.sql import func
+
+class Note(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    data = db.Column(db.String(10000))
+    date = db.Column(db.DateTime(timezone=True), default=func.now())
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+class User(db.Model, UserMixin): #uses UserMixin
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(150), unique=True)
+    password = db.Column(db.String(150))
+    first_name = db.Column(db.String(150))
+    notes = db.relationship('Note')
+````
+Firstly, we imported our db object that we created before. We will also import UserMixin from the flask_login module. This User Object Helper provide defaul implementations for the methods that Flask-Login expects user objects to have (vgl. Flask-Login — Flask-Login 0.7.0 documentation n.d.). You can see that the User class uses UserMixin. The question now is why. Flask-Login requires a User model to have the following properties (vgl. What is the UserMixin in Flask? n.d.):
+
+- has an is_authenticated() method that returns True if the user has provided valid credentials
+- has an is_active() method that returns True if the user’s account is active
+- has an is_anonymous() method that returns True if the current user is an anonymous user
+- has a get_id() method which, given a User instance, returns the unique ID for that object
+
+What the UserMixin class is now doing is that it provides the implementation of these properties. For example, the function is_authenticated() can be used instaed of writing an own method (vgl. What is the UserMixin in Flask? n.d.).
+
+The User class will have 5 columns id, email, password, first_name and notes. With unique=True it means that no user can have the same email as another user. We also want to know which user created which note. Therefore, we also have a column that refers to the note id from the Note table.   
+
+## User
+| *id* | email | password | first_name | notes |
+|----|-------|----------|------------|-------|
+| 1   |   x@x.de    |   123       |      Max     |   1    |
+
+The Note class will have id, data, date an user_id as columns. All of the notes need to be associated to a specific user, therefore we need a foreign key relationship that specifically references a column from one table to the other table. Therefore, for every note, we want to know to whom it belongs. For that we have the column user_id, which links to an existing user from the the User class. Therefore, one user can have many notes. 
+
+## Note
+| *id* | data | date | user_id| 
+|----|-------|----------|------------|
+|   1 |   xxx    |xx.xx.xxx          |   1         |       
+
+We always need a primary key e.g. an id as an Integer, because the two users can have the same name but not the same id. 
+
+Now that we defined our database models, we want to actually create them. For that we want to check everytime, if the database have been created yet. Go into your *__ init__.py* file and add the following code. Then run it:  
+
+````python
+
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy 
+from os import path #add
+
+db = SQLAlchemy() 
+DB_NAME = "database.db"
+
+def create_app(): 
+    app = Flask(__name__) 
+    app.config['SECRET_KEY'] = 'dsjkajeijw' 
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
+    db.init_app(app) 
+
+    from .views import views
+    from .auth import auth
+
+    app.register_blueprint(views, url_prefix='/')
+    app.register_blueprint(auth, url_prefix='/')
+
+    from .models import User, Note #add
+    
+    return app
+
+def create_database(app): # add
+    if not path.exists('webapp/' +  DB_NAME):
+        db.create_all(app=app)
+        print('Created Database!')
+````
+Firstly, we imported the models we created: User and Note. With the function create_database() we now created a database.db file that most likely is located in the instance folder of your webapp. 
+
+---
+### 6.2 Creating New User Accounts
+---
+
+Now go to your *auth.py* file:
+
+```python
+from flask import Blueprint, render_template, request, flash, redirect, url_for # add
+from .models import User # add the following code
+from werkzeug.security import generate_password_hash, check_password_hash
+from . import db
+
+auth = Blueprint('auth', __name__)
+
+@auth.route(/login, methods=['GET', 'POST']) 
+def login():
+    return render_template("login.html") 
+
+@auth.route(/logout)
+def logout():
+    return "<p>Logout</p>"
+
+@auth.route(/sign-up, methods=['GET', 'POST'])
+def sign_up():
+         if request.method == 'POST':
+         email = request.form.get('email')
+         first_name = request.form.get('firstName')
+         password1 = request.form.get('password1')
+         password2 = request.form.get('password2')
+# if this return  a user, the email already exist
+         user= User.query.filter_by(email=email).first()
+
+         if user:
+             flash('Email already exists.', category='error')
+
+         elif len(email) < 4:
+             flash('Email must be greater than 3 characters.', category='error')
+         elif len(first_name) < 2:
+             flash('First name must be greater than 1 character.', category='error')
+         elif password1 != password2:
+             flash('Passwords dont match.', category='error')
+         elif len(password1) < 7:
+             flash('Password must be at least 7 characters.', category='error')
+         else: # add
+            # create a new user and hash the password
+             new_user= User(email=email, first_name=first_name, password=generate_password_hash(password1, method='sha256'))
+             # add the new user to the database
+             db.session.add(new_user)
+             db.session.commit()
+             login_user(user, remember=True)
+             flash('Account created!', category='success')
+             return redirect(url_for('views.home')) # if user is found, it gets redirected back to the home page, we map which function links to the url
+ 
+     return render_template("sign_up.html", user=current_user) 
+```
+Here we check if the data that the user submitted to the form is correct, if valid then we add it to the database. We also need to make sure that the password is getting hashed before putting the data into the database, because it is important to remember, that storing passwords in plain text is considered a poor security practice (vgl. Herbert 2021).  
+
+---
+### 6.3 Adding the Login Method
+---
+
+Now go to your *auth.py* file:
+
+```python
+from flask import Blueprint, render_template, request, flash, redirect, url_for # add
+from .models import User # add the following code
+from werkzeug.security import generate_password_hash, check_password_hash
+from . import db
+
+auth = Blueprint('auth', __name__)
+
+@auth.route(/login, methods=['GET', 'POST']) 
+def login():
+    return render_template("login.html") 
+
+@auth.route(/logout)
+def logout():
+    return "<p>Logout</p>"
+
+@auth.route(/sign-up, methods=['GET', 'POST'])
+def sign_up():
+         if request.method == 'POST':
+         email = request.form.get('email')
+         first_name = request.form.get('firstName')
+         password1 = request.form.get('password1')
+         password2 = request.form.get('password2')
+# if this return  a user, the email already exist
+         user= User.query.filter_by(email=email).first()
+
+         if user:
+             flash('Email already exists.', category='error')
+
+         elif len(email) < 4:
+             flash('Email must be greater than 3 characters.', category='error')
+         elif len(first_name) < 2:
+             flash('First name must be greater than 1 character.', category='error')
+         elif password1 != password2:
+             flash('Passwords dont match.', category='error')
+         elif len(password1) < 7:
+             flash('Password must be at least 7 characters.', category='error')
+         else: # add
+            # create a new user and hash the password
+             new_user= User(email=email, first_name=first_name, password=generate_password_hash(password1, method='sha256'))
+             # add the new user to the database
+             db.session.add(new_user)
+             db.session.commit()
+             login_user(user, remember=True)
+             flash('Account created!', category='success')
+             return redirect(url_for('views.home')) # if user is found, it gets redirected back to the home page, we map which function links to the url
+ 
+     return render_template("sign_up.html", user=current_user) 
+```
 
 
 
@@ -577,7 +802,7 @@ Go to the *base.html* file and write this code under the nav end tag.
 ## Sources
 ---
 - https://code.visualstudio.com/docs/python/python-tutorial
-- https://www.youtube.com/watch?v=dam0GPOAvVI&t=4255s
+- Tech With Tim (2021b): Python Website Full Tutorial - Flask, Authentication, Databases & More, [YouTube] https://www.youtube.com/watch?v=dam0GPOAvVI.
 - notebook "03d - How to set up Python and VS Code" from the class "316002 Entwicklung von Web-Anwendungen" of Prof. Dr. Alexander Eck. 
 - the notebook "03b - Full stack web dev intro notebook" from the class "316002 Entwicklung von Web-Anwendungen" by Prof. Dr. Alexander Eck.
 - https://pythonbasics.org/decorators/
@@ -591,3 +816,6 @@ Go to the *base.html* file and write this code under the nav end tag.
 - Jinja2 Default Page Title (n.d.): Stack Overflow, [online] https://stackoverflow.com/questions/12339324/jinja2-default-page-title#:~:text=Use%20a%20block%3A%20%3Ctitle%3E%20%7B%25%20block%20title%20%25%7D,template%20if%20you%20want%20to%20change%20the%20title.
 -Template Inheritance — Jinja Documentation (n.d.): [online] https://svn.python.org/projects/external/Jinja-1.1/docs/build/inheritance.html.
 - Der HTTP-Request einfach erklärt (2020): IONOS Digital Guide, [online] https://www.ionos.de/digitalguide/hosting/hosting-technik/http-request-erklaert/.
+- Flask-Login — Flask-Login 0.7.0 documentation (n.d.): [online] https://flask-login.readthedocs.io/en/latest/#how-it-works.
+- What is the UserMixin in Flask? (n.d.): Stack Overflow, [online] https://stackoverflow.com/questions/63231163/what-is-the-usermixin-in-flask.
+- Herbert, Anthony (2021): How To Add Authentication to Your App with Flask-Login, in: DigitalOcean, [online] https://www.digitalocean.com/community/tutorials/how-to-add-authentication-to-your-app-with-flask-login.
