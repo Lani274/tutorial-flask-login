@@ -1,4 +1,4 @@
-# Tutorial Flask-Login Usage
+# Tutorial Flask-Login Usage in a Web App
 Tutorial Flask-Login in the course "316002 Entwicklung von Web-Anwendungen" 
 
 Professor: Prof. Dr. Alexander Eck
@@ -13,7 +13,7 @@ Submitted by Lana Aram
 
 This tutorial draws heavily from [this video](https://www.youtube.com/watch?v=dam0GPOAvVI&t=4255s). The code for the web app has been mostly copied from this tutorial.
 
-I tested the code on my current Windows 11 machine and I will show in this tutorial how it works on Windows, not on macOS, therefore I don't guarantee that it will work as described on a Mac. If you have a Mac you might need to research further sources.
+I tested the code on my current Windows 11 machine and I will show in this tutorial how it works on Windows, not on macOS, therefore I don't guarantee that it will work as described on a Mac. 
 
 ---
 
@@ -80,7 +80,7 @@ By completing this setup you will have all the prerequisites to further follow t
 
 
 ### **Create a project folder with a Python Virtual Environment**
-#### **Create a project folder**
+
 You need to create a new folder    */webapp*. Your full path on Windows might then look like *C:\Users\me\projects\webapp*
 
 #### **Create a Python Virtual Environment and install Flask**
@@ -105,7 +105,7 @@ pip install flask
 ```
 ### **Installation of Visual Studio Code and Activation of the Python Virtual Environment**
 
-#### **Install Visual Studio Code with the Python extension**
+
 
 Download and install Visual Studio Code from [this link](https://code.visualstudio.com/) . 
 
@@ -926,7 +926,7 @@ def create_database(app):
 ```
 We added LoginManager through the Flask-Login extension and can now use methods to manage our login management. Firstly, we instatiated and initialized the extension into our code. Moreover, with *login_view* we set the view for our Login, which will here be *auth.login* (vgl. Herbert 2021). With the function load_user() we can give out a user object from the database which is associated with the id in the current session. For that we use the *User.query.get()* method which finds the User object with the primary key from the integer type (vgl. Herbert 2021). Load_user() must be implemented by our web app as this function is a must for the Flask-Login extension (vgl. freeCodeCamp.org 2019).
 
-Now we want to change the navbar to so that it only shows the correct icons, when logged in. For that we want to check if the user is logged in. The current_user that was addded in view.py, is going to detect if a user is logged in or not. If the user is logged in current_user will give us all the information about the user, like the name, notes and email (vgl. How to track the current user in flask-login? n.d.). If the user is not logged in then it will tell us that the current user is an anonymous user and is not known because he is not logged in (vgl. How to track the current user in flask-login? n.d.). 
+Now we want to change the navbar to so that it only shows the correct icons, when logged in. For that we want to check if the user is logged in. The current_user that was addded in view.py, is going to detect if a user is logged in or not. If the user is logged in current_user will give us all the information about the user (vgl. How to track the current user in flask-login? n.d.). If the user is not logged in then it will tell us that the current user is an anonymous user and is not known because he is not logged in (vgl. How to track the current user in flask-login? n.d.). 
 
 For that go to our view.py file. 
 
@@ -1036,7 +1036,7 @@ def home():
 
     return render_template("home.html", user=current_user)
 ````
-If the user has submitted a form in the input field and submitted it through the submit button. Moreover, the length of the notes is needs to be more than 1 character otherwise the user gets a message flashing. But if the note is not too short, a Note object (we needed to import it from the Note model) will be created and linked to the current user and his id. The new note will then be commited to our Note database. Additionally, it will show a green message for the user who succesfully added his note. 
+We will test now if the user has submitted a form in the input field. Moreover, the length of the notes needs to be more than 1 character otherwise the user gets a message flashing. But if the note is not too short, a Note object (we needed to import it from the Note model) will be created and linked to the current user and his id. The new note will then be commited to our Note database. Additionally, it will show a green message for the user who succesfully added his note. 
 
 ---
 ## Follow-Ups
@@ -1052,27 +1052,27 @@ If the user has submitted a form in the input field and submitted it through the
 ---
 ## Sources
 ---
-- https://code.visualstudio.com/docs/python/python-tutorial
-- Tech With Tim (2021b): Python Website Full Tutorial - Flask, Authentication, Databases & More, [YouTube] https://www.youtube.com/watch?v=dam0GPOAvVI.
-- notebook "03d - How to set up Python and VS Code" from the class "316002 Entwicklung von Web-Anwendungen" of Prof. Dr. Alexander Eck. 
-- the notebook "03b - Full stack web dev intro notebook" from the class "316002 Entwicklung von Web-Anwendungen" by Prof. Dr. Alexander Eck.
-- https://pythonbasics.org/decorators/
-- Flask-Login — Flask-Login 0.7.0 documentation (n.d.): [online] https://flask-login.readthedocs.io/en/latest/.
-- How to debug a Flask app (n.d.): Stack Overflow, [online] https://stackoverflow.com/questions/17309889/how-to-debug-a-flask-app.
-- Python, Real (2021): Use a Flask Blueprint to Architect Your Applications, in: realpython.com, [online] https://realpython.com/flask-blueprint/#what-a-flask-application-looks-like.
-- Python - Routing (n.d.): [online] https://www.tutorialspoint.com/python_network_programming/python_routing.htm.
-- Admin (2021): Flask Templates with Jinja2 Explained in Detail | GoLinuxCloud, in: GoLinuxCloud, [online] https://www.golinuxcloud.com/flask-template/.
-- Contributors, Mark Otto Jacob Thornton, and Bootstrap (n.d.): Introduction, [online] https://getbootstrap.com/docs/5.0/getting-started/introduction/.
-- Basic Syntax of Jinja (n.d.): Engagement, [online] https://documentation.bloomreach.com/engagement/docs/jinja-syntax.
-- Jinja2 Default Page Title (n.d.): Stack Overflow, [online] https://stackoverflow.com/questions/12339324/jinja2-default-page-title#:~:text=Use%20a%20block%3A%20%3Ctitle%3E%20%7B%25%20block%20title%20%25%7D,template%20if%20you%20want%20to%20change%20the%20title.
--Template Inheritance — Jinja Documentation (n.d.): [online] https://svn.python.org/projects/external/Jinja-1.1/docs/build/inheritance.html.
-- Der HTTP-Request einfach erklärt (2020): IONOS Digital Guide, [online] https://www.ionos.de/digitalguide/hosting/hosting-technik/http-request-erklaert/.
-- Flask-Login — Flask-Login 0.7.0 documentation (n.d.): [online] https://flask-login.readthedocs.io/en/latest/#how-it-works.
-- What is the UserMixin in Flask? (n.d.): Stack Overflow, [online] https://stackoverflow.com/questions/63231163/what-is-the-usermixin-in-flask.
-- Herbert, Anthony (2021): How To Add Authentication to Your App with Flask-Login, in: DigitalOcean, [online] https://www.digitalocean.com/community/tutorials/how-to-add-authentication-to-your-app-with-flask-login.
 - 10.9. Sessions — Fundamentals of Web Programming (n.d.): [online] https://runestone.academy/ns/books/published/webfundamentals/Flask/sessions.html.
-- Quickstart — Flask Documentation (2.1.x) (n.d.): [online] https://flask.palletsprojects.com/en/2.1.x/quickstart/#rendering-templates.
+- Admin (2021): Flask Templates with Jinja2 Explained in Detail | GoLinuxCloud, in: GoLinuxCloud, [online] https://www.golinuxcloud.com/flask-template/.
+- Basic Syntax of Jinja (n.d.): Engagement, [online] https://documentation.bloomreach.com/engagement/docs/jinja-syntax.
 - Bootstrap Alerts (n.d.): [online] https://www.w3schools.com/bootstrap/bootstrap_alerts.asp.
-- Quickstart — Flask Documentation (2.1.x) (n.d.): [online] https://flask.palletsprojects.com/en/2.1.x/quickstart/#verifying-password-hashes.
--freeCodeCamp.org (2019): Learn Flask for Python - Full Tutorial, [YouTube] https://www.youtube.com/watch?v=Z1RJmh_OqeA.
-- How to track the current user in flask-login? (n.d.): Stack Overflow, [online] https://stackoverflow.com/questions/19274226/how-to-track-the-current-user-in-flask-login.
+- Contributors, Mark Otto Jacob Thornton, and Bootstrap (n.d.): Introduction, [online] https://getbootstrap.com/docs/5.0/getting-started/introduction/.
+- Der HTTP-Request einfach erklärt (2020): IONOS Digital Guide, [online] https://www.ionos.de/digitalguide/hosting/hosting-technik/http-request-erklaert/.
+- Flask-Login (2022): PyPI, [online] https://pypi.org/project/Flask-Login/.
+- Flask-Login — Flask-Login 0.7.0 documentation (n.d.): [online] https://flask-login.readthedocs.io/en/latest/.
+- freeCodeCamp.org (2019): Learn Flask for Python - Full Tutorial, [YouTube] https://www.youtube.com/watch?v=Z1RJmh_OqeA.
+- Herbert, Anthony (2021): How To Add Authentication to Your App with Flask-Login, in: DigitalOcean, [online] https://www.digitalocean.com/community/tutorials/how-to-add-authentication-to-your-app-with-flask-login.
+- How to debug a Flask app (n.d.): Stack Overflow, [online] https://stackoverflow.com/questions/17309889/how-to-debug-a-flask-app.
+-How to track the current user in flask-login? (n.d.): Stack Overflow, [online] https://stackoverflow.com/questions/19274226/how-to-track-the-current-user-in-flask-login.
+- Jinja2 Default Page Title (n.d.): Stack Overflow, [online] https://stackoverflow.com/questions/12339324/jinja2-default-page-title#:~:text=Use%20a%20block%3A%20%3Ctitle%3E%20%7B%25%20block%20title%20%25%7D,template%20if%20you%20want%20to%20change%20the%20title.
+- the notebook "03b - Full stack web dev intro notebook" from the class "316002 Entwicklung von Web-Anwendungen" by Prof. Dr. Alexander Eck.
+- notebook "03d - How to set up Python and VS Code" from the class "316002 Entwicklung von Web-Anwendungen" of Prof. Dr. Alexander Eck.
+- Python - Routing (n.d.): [online] https://www.tutorialspoint.com/python_network_programming/python_routing.htm.
+- Python Decorators Introduction - Python Tutorial (n.d.): [online] https://pythonbasics.org/decorators/.
+- Python, Real (2021a): Use a Flask Blueprint to Architect Your Applications, in: realpython.com, [online] https://realpython.com/flask-blueprint/#what-a-flask-application-looks-like.
+- Python, Real (2021b): Using Flask-Login for User Management with Flask, in: realpython.com, [online] https://realpython.com/using-flask-login-for-user-management-with-flask/.
+- Quickstart — Flask Documentation (2.1.x) (n.d.): [online] https://flask.palletsprojects.com/en/2.1.x/quickstart/#rendering-templates.
+- Tech With Tim (2021): Python Website Full Tutorial - Flask, Authentication, Databases & More, [YouTube] https://www.youtube.com/watch?v=dam0GPOAvVI.
+- Template Inheritance — Jinja Documentation (n.d.): [online] https://svn.python.org/projects/external/Jinja-1.1/docs/build/inheritance.html.
+-What is the UserMixin in Flask? (n.d.): Stack Overflow, [online] https://stackoverflow.com/questions/63231163/what-is-the-usermixin-in-flask.
+
