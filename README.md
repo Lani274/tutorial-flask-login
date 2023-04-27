@@ -40,7 +40,7 @@ I tested the code on my current Windows 11 machine and I will show in this tutor
 ## 1. Learning Objective  
 ---
 
-The Learning Objectives are firstly to set up Python and Visual Studio Code. Then to create a running  Flask application that demonstrates and visualizes how Flask-Login can be used. By the end of this tutorial, you should have a website, mostly written with Python, where a user can login and logout. Therefore, the user needs an account which is stored in a database. In addition, the user can save notes in a list and only the notes of the logged in user are displayed. The goal is that you will not only understand Flask-Login, but also know how basic-mechanisms of Python are used. Come back here as often as you need, it serves as a beginner tutorial which can be implemented in  more web apps. Through this happy path you will understand how Flask-Login can be implemented into a web app. So, let's dive in!
+The Learning Objectives are firstly to set up Python and Visual Studio Code. Then to create a running  Flask application that demonstrates and visualizes how Flask-Login can be used. By the end of this tutorial, you should have a website, mostly written with Python, where a user can login and logout. Therefore, the user needs an account which is stored in a database. In addition, the user can save notes in a list and only the notes of the logged in user are displayed. The goal is that you will not only understand Flask-Login, but also know how basic-mechanisms of Python are used. Come back here as often as you need, it serves as a beginner tutorial which can be implemented in  any web app. Through this happy path you will understand how Flask-Login can be implemented into a web app. So, let's dive in!
 
 To-Do:
 - [ ] Setting up Python and Visual Studio Code
@@ -202,7 +202,7 @@ def create_app(): #define function create_app()
     
     return app
 ```
-We created the flask app and defined the function create_app() which returns the app.
+We created the Flask app and defined the function create_app() which returns the app. We also defined a secret key for the Flask application, which encrypts the session data (vgl. 10.9. Sessions — Fundamentals of Web Programming n.d.). 
 
 Go to *main.py*.
 
@@ -215,9 +215,10 @@ if __name__ == '__main__':
     app.run(debug=True)
 ```
 
-We now import our website package, or what might be called webapp in your case, and grab that create_app function from  the *__ init__.py* file and use that to actually create an application which can be run. 
+
+We now import our website package, or what might be called webapp in your case, and grab that create_app function from  the *__ init__.py* file and use that to actually create an application which can be run. Moreover, we asign it to the variable app. 
 *if __ name__ == '__ main__':* etc.
-states that I only want to run the web server if we run the *main.py* file. app.run(debug=True) means that everytime we will make a change in our Python code, it will automatically run the webserver (vgl. How to debug a Flask app n.d.). 
+states that I only want to run the web server if we run the *main.py* file. The method app.run(debug=True) means that everytime we will make a change in our Python code, it will automatically run the webserver in debug mode (vgl. How to debug a Flask app n.d.). 
 
 
 ----
@@ -235,9 +236,9 @@ views = Blueprint('views', __name__)
 def home(): # this function will run whenever we go to the slash route (our main page)
 
 ```
-We created a Blueprint object called views and we can now add views to the Blueprint object using the route decorator. If you want to know more about using Blueprint [read more on this page](https://realpython.com/flask-blueprint/#what-a-flask-application-looks-like).
+We created a Blueprint instance called views and we can now add views to the Blueprint object using the route decorator. If you want to know more about using Blueprint [read more on this page](https://realpython.com/flask-blueprint/#what-a-flask-application-looks-like). We now have a route using a Blueprint instance.
 
-Do the same thing in *auth.py* but change the Blueprint object into *auth*. 
+Do the same thing in *auth.py* but change the Blueprint instance to *auth*. 
 
 ```python
 from flask import Blueprint
@@ -246,7 +247,7 @@ auth = Blueprint('auth', __name__)
 ```
 
 Inside the *__ init__.py* file 
-we need to tell this file that we have blueprints containing different views for our application. 
+we need to tell this file that we have blueprint instances containing different views for our application. 
 
 Your *__ init__.py* file  should now look like this: 
 ```python
@@ -264,7 +265,7 @@ def create_app():
     
     return app
 ```
-We are now basically importing the Blueprint object from *views.py* which is called views and also from *auth.py* which is called auth. Then we need to register them into our flask application with register_blueprint(). When a Flask Blueprint is registered, the application is extended with its contents (vgl. Python 2021). 
+We are now basically importing the Blueprint object from *views.py* which is called views and also from *auth.py* which is called auth. Then we need to register them into our flask application with register_blueprint(). When a Flask Blueprint is registered, the application is extended with its contents (vgl. Python 2021). To each registered Blueprint, we also configure a URL prefix, which here is the root URL. 
 
 Back to our *auth.py* file extend with this code: 
 
@@ -286,13 +287,13 @@ def sign_up():
     return "<p>Sign Up</p>"
 ```
 
-You can now run your webserver by going to your main.py file and clicking on the run button on the right-hand corner. What the above code is intented to do, is to create a navigation for the user through our web app. If you go to the URL bar, in your opened up standard browser, at the top and change the last "/" to "/sign-up", it will go to our Signup page for our user. It will also show the output of the sign_up() function in your browser. You can also do that with "/login" and "/logout".This mechanism is called Routing (vgl. Python - Routing n.d.).  
+You can now run your webserver by going to your *main.py* file and clicking on the run button on the right-hand corner. What the above code is intented to do, is to create a navigation for the user through our web app. If you go to the URL bar, in your opened up standard browser, at the top and change the last "/" to "/sign-up", it will go to our Signup page for our user. It will also show the output of the sign_up() function in your browser. You can also do that with "/login" and "/logout".This mechanism is called Routing (vgl. Python - Routing n.d.).  
 
 ---
 ### 5.3 Jinja Templating Language & HTML Templates
 ---
 
-Jinja2 is a python HTML template engine, which means that HTML documents will be combined with data. It is installed with Flask. Jinja2 offers many options for formatting data in the HTML file (vgl. Admin 2021). Inside our template folder we created a base.html file, which is the base templated and creates the theme of the web app. The other files in the templates folder will then override parts of the base.html with more specific parts (vgl. Admin 2021). 
+Jinja2 is a python HTML template engine, which means that HTML documents will be combined with data. It is installed with Flask. Jinja2 offers many options for formatting data in the HTML file (vgl. Admin 2021). Inside our template folder we created a base.html file, which is the base template. It will create the theme of the web app. The other files in the templates folder will then override parts of the base.html with more specific parts for each page (vgl. Admin 2021). 
 
 Extend *base.html* with this code (it is best to copy it):
 
@@ -317,7 +318,7 @@ Extend *base.html* with this code (it is best to copy it):
     </head>
 </html>
 ```
-I will not dive deep into HTML and CSS stylesheets as this is not part of this tutorial. However, we imported bootstrap into the code, which is a CSS framework which allows to use pre-build classes for our website design (vgl. Contributors n.d.). The links allow to load custom CSS content and classes, without downloading a specific file. We can then use them into our HTML file. Inside the *{%%}* (called Delimiters) you can actually write Python code, like if statements (vgl. Basic Syntax of Jinja n.d.). With *block title* we create the Home title of our page, which then can be overriden in another template e.g. Login, where the title needs to be changed (vgl. Jinja2 Default Page Title n.d.).  
+I will not dive deep into HTML and CSS stylesheets as this is not part of this tutorial. However, we imported bootstrap into the code, which is a CSS framework which allows to use pre-build classes for our website design (vgl. Contributors n.d.). The links allow to load custom CSS content and classes, without downloading a specific file. We can then use them into our HTML file. Inside the *{%%}* (called Delimiters) you can actually write Python code, like if statements (vgl. Basic Syntax of Jinja n.d.). With *block title* we create the Home title of our page, which then can be overriden in another template e.g. the Login page, where the title needs to be changed (vgl. Jinja2 Default Page Title n.d.).  
 
 
 Under the end head tag continue with this code, which are JavaScript scripts, inside the body tags: 
@@ -346,6 +347,9 @@ Under the end head tag continue with this code, which are JavaScript scripts, in
     </body>
 </html>
 ```
+These links, inside the script tags, are mostly there for pre-build UI components that Bootstrap provides.
+
+
 Above the script tags, but inside the body tags, continue with extending this code:
 ```html
 
@@ -355,29 +359,29 @@ Above the script tags, but inside the body tags, continue with extending this co
           </button>
         <div class="collapse navbar-collapse" id="navbar">
           <div class="navbar-nav">
-            {% if user.is_authenticated %}
             <a class="nav-item nav-link" id="home" href="/">Home</a>
             <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>
-            {% else %}
             <a class="nav-item nav-link" id="login" href="/login">Login</a>
             <a class="nav-item nav-link" id="signUp" href="/sign-up">Sign Up</a>
-            {% endif %}
           </div>
         </div>
       </nav>
 ```
-This code will create a navigation bar which links to the different pages. 
+This code will create a navigation bar using Bootstrap which links to the different pages. Therefore, the user can change easly between the pages of our web app. 
+
 Underneath the end nav tag continue with this code:
+
+
 ```html
       <div class="container">
         {% block content %}
         {% endblock %}
       </div>
 ```
+Here we define the div container, where the block content and endblock tags define a specific space. With Jinja2 parent templates like this one can be overriden through child templates (vgl. Template Inheritance — Jinja Documentation n.d.). Through this *base.html* file we therefore create a consistent layout throughout our web app. 
 
-Go to *home.html*, where we will extend the *base.html* template witht he following code. *home.html* can now override *base.html* (vgl. Template Inheritance — Jinja Documentation n.d.). 
+Go to *home.html*, where we will extend the *base.html* template with the following code. *home.html* can now override *base.html* (vgl. Template Inheritance — Jinja Documentation n.d.). 
 
-!!!!!!!!!!!!!!!!!!!!!
 ```html
 {% extends "base.html" %} {% block title %}Home{% endblock %}
 
@@ -385,7 +389,7 @@ Go to *home.html*, where we will extend the *base.html* template witht he follow
 <h1>This is the home page</h1>
 {% endblock %}
 ```
-
+Through *extends* we inherited *from base.html* and can now allow individual content while holding the layout of the *base.html* page (vgl. Template Inheritance — Jinja Documentation n.d.).
 
 Inside the *views.py* file add this code, so that the *home.html* template will be returned.
 
@@ -399,6 +403,7 @@ views = Blueprint('views', __name__)
 def home(): 
     return render_template("home.html") # add this code
 ```
+The home() function returns the template *home.html*, while the function render_template() returns the HTML content of the template (vgl. Quickstart — Flask Documentation (2.1.x) n.d.). 
 
 
 We will now look at the *login.html* and *sign_up.html* file. Go into *login.html* and add this code:
@@ -421,9 +426,10 @@ Go to *sign_up.html* and add the similar code.
 <h1>This is the sign up page</h1>
 {% endblock %}
 ````
+We again extend the *base.html* template because we want to have a consistent layout, while also providing individual sections for our different pages. 
 
 
-Inside of *auth.py* we don't want the html code inside, but instead our templates. Replace the *p* tags with render_template().
+Inside of *auth.py* we don't want the HTML code, but our templates instead. Replace the *p* tags with render_template().
 Also add the code shown in the comments:
 ```python
 from flask import Blueprint, render_template # add this
@@ -442,6 +448,7 @@ def logout():
 def sign_up():
     return render_template("sign_up.html") # replace p tag with this code
 ```
+The routes login, logout and sign-up will now use their individual templates to show different page content.  
 
 Go to *sign_up.html* and replace the *h1* tags with this code.
 
@@ -472,7 +479,7 @@ Go to *sign_up.html* and replace the *h1* tags with this code.
 </form>
 {% endblock %}
 ````
-This code will create four labels for our sign up page and also four fields to let the user enter his email, first name and password. We will also have a submit button. 
+This code will create four labels for our sign up page and also four input fields to let the user enter his email, first name and password. We will also have a submit button to submit the information of the user.
 
 Now go to *login.html* and replace the h1 tag with the following code:
 
@@ -562,7 +569,7 @@ For that, go to the *base.html* file and write this code under the nav end tag.
     {% endif %}
     {% endwith %}
 ````
-We now can message the user, if something went wrong. 
+We now can message the user, if something went wrong. We also attached a red color display for error messags through the block check and also to show green color. The else block shows the green color change for the success message. Moreover, the *data-dismiss="alert"* shows the user a close button after an alert section appeared (vgl. Bootstrap Alerts n.d.).
 
 ---
 ## 6. Flask-Login 
@@ -570,6 +577,8 @@ We now can message the user, if something went wrong.
 ---
 ### 6.1 Database Models
 ---
+
+We now set up SQLAlchemy to create a specific database. 
 
 Go into your *__ init__.py* file and add the following code: 
 
@@ -595,9 +604,9 @@ def create_app():
     
     return app
 ````
-Our database name is now called *database.db* and we have the database object called db. With db.init_app(app) we will take the database object and link it to our flask app (vgl. Tech With Tim 2021b). 
+Our database name is now called *database.db* and we have the database object called db. With the function db.init_app(app) we will take the database object and link it to our flask app (vgl. Tech With Tim 2021b). 
 
-Inside our *models.py* file we will create our database models. We want to have two database models, one for our users and one for our notes. 
+Inside our *models.py* file we will create our database models. We want to have two database models, one for our users and one for our notes. Therefore, we want the information to be saved seperately.
 ````python
 from . import db
 from flask_login import UserMixin
@@ -616,15 +625,16 @@ class User(db.Model, UserMixin): #uses UserMixin
     first_name = db.Column(db.String(150))
     notes = db.relationship('Note')
 ````
-Firstly, we imported our db object that we created before. We will also import UserMixin from the flask_login module. This User Object Helper provide defaul implementations for the methods that Flask-Login expects user objects to have (vgl. Flask-Login — Flask-Login 0.7.0 documentation n.d.). You can see that the User class uses UserMixin. The question now is why. Flask-Login requires a User model to have the following properties (vgl. What is the UserMixin in Flask? n.d.):
+Firstly, we imported our db object that we created before. We will also import the UserMixin class from the Flask-Login module. This User Object Helper provide defaul implementations for the methods that Flask-Login expects user objects to have (vgl. Flask-Login — Flask-Login 0.7.0 documentation n.d.). Flask-Login requires a User model to have the following properties (vgl. What is the UserMixin in Flask? n.d.):
 
 - has an is_authenticated() method that returns True if the user has provided valid credentials
 - has an is_active() method that returns True if the user’s account is active
 - has an is_anonymous() method that returns True if the current user is an anonymous user
 - has a get_id() method which, given a User instance, returns the unique ID for that object
 
-What the UserMixin class is now doing is that it provides the implementation of these properties. For example, the function is_authenticated() can be used instaed of writing an own method (vgl. What is the UserMixin in Flask? n.d.).
+What the UserMixin class is now doing is that it provides the default implementation of these methods. For example, the function is_authenticated() can be used instaed of writing an own method (vgl. What is the UserMixin in Flask? n.d.).
 
+Moreover, our data models will look like this.
 The User class will have 5 columns id, email, password, first_name and notes. With unique=True it means that no user can have the same email as another user. We also want to know which user created which note. Therefore, we also have a column that refers to the note id from the Note table.   
 
 ## User
@@ -673,7 +683,7 @@ def create_database(app): # add
         db.create_all(app=app)
         print('Created Database!')
 ````
-Firstly, we imported the models we created: User and Note. With the function create_database() we now created a database.db file that most likely is located in the instance folder of your webapp. 
+Firstly, we imported the models we created: User and Note. With the function create_database() we now created a database.db file that most likely is located in the instance folder of your web app. 
 
 ---
 ### 6.2 Creating New User Accounts
@@ -730,7 +740,7 @@ def sign_up():
  
      return render_template("sign_up.html", user=current_user) 
 ```
-Here we check if the data that the user submitted to the form is correct, if valid then we add it to the database. We also need to make sure that the password is getting hashed before putting the data into the database, because it is important to remember, that storing passwords in plain text is considered a poor security practice (vgl. Herbert 2021).  
+Here we check if the data that the user submitted to the form is correct, if valid we then add the information to the database. We also need to make sure that the password is getting hashed before putting the data into the database, because it is important to remember, that storing passwords in plain text is considered a poor security practice (vgl. Herbert 2021).  
 
 ---
 ### 6.3 Adding the Login Method
@@ -765,11 +775,11 @@ def login():
 
     return render_template("login.html", user=current_user)
 ```
-The user can sign up now but we also want the user to log in with an already existing account. Firstly, we want to get the email and the password from the form. Then we want to check if the email is actually valid and that an user belongs to this email. In the User model we will filter_by() with an query, that finds all the users that have the email, that was in the field. If we then actually find an user, we need to check if the password typed in is equal to the hashed one. If the user is logged in successfully then it will redirect the user to the home page.  
+The user can sign up now but we also want the user to log in with an already existing account. Firstly, we want to get the email and the password from the input form. Then we want to check if the email is actually valid and that an user belongs to this email. In the User model we will filter_by() with an query, that finds all the users that have the email, that was in the input field. If we then actually find an user, we need to check if the password typed in is equal to the hashed one. *check_password_hash* is a function which we can use through the werkzeug.security module that we imported. It checks the hashed password and the plain-text password and then returns True or False (vgl. Quickstart — Flask Documentation (2.1.x) n.d.). If the user is now logged in successfully then it will redirect the user to the home page. For that, we use the login_user function from Flask-Login. It takes the User object from the database that we created and filtered. Moreover, the login_user function lets the *remember* argument to remember the user (vgl. Flask-Login — Flask-Login 0.7.0 documentation n.d.) Moreover, it will flash an error message if the email does not exists or the password is not valid. 
 
-What we want to do now is to only let a logged in user access the home page with his personal notes. Moreover, we want the *Login* and *Sign Up* in the navbar to disappear, if the User is already logged in, so that it will only show Home and Logout. 
+What we want to do now is to only let a logged in user access the home page with his personal notes. Moreover, we want the *Login* and *Signup* in the navbar to disappear, if the user is already logged in, so that it will only show *Home* and *Logout*. 
 
-For that go to your *auth.py* file
+For that go to your *auth.py* file and add the Flask-Login Module.
 ```python
 from flask import Blueprint, render_template, request, flash, redirect, url_for 
 from .models import User 
@@ -803,10 +813,8 @@ def login():
 
     return render_template("login.html", user=current_user)
 ```
-
-The current_user object is connected to the UserMixin from models.py and allows the save all the information of the current logged in user.  
-
-Moreover, the login_user function is used to log a user into our application. It attaches the user's ID to the user object. The login_user funtcion always requires an user object which has an id, in order to store the id in the session (vgl. Herbert 2021). 
+Firstly, we imported the Flask-Login extension. There we e.g. have login_user a function, that allows the logged in user to be associated with the current session (vgl. Flask-Login — Flask-Login 0.7.0 documentation n.d.). Login_required can be applied to a view and if the user is not logged in, he will go to the Login page. Logout_user allows a user to log out. Current_user is associated to the current user, therefore it will hold a user object from the logged in user. If the user in not logged in it will save an anonymous user (vgl. Flask-Login — Flask-Login 0.7.0 documentation n.d.). 
+Moreover, the login_user function is again used to log a user into our application. It attaches the user's ID to the user object. The login_user funtcion always requires an user object which has an id, in order to store the id in the session (vgl. Herbert 2021). The user will now go to the Home page after he logged inside his account in order to see his notes. 
 
 Now go to your *auth.py* file and look at the signup: 
 
@@ -843,19 +851,19 @@ def sign_up():
              return redirect(url_for('views.home')) 
 ```
 
-login_user(user, remember=True) will here log the User in, after he has been sucessfully signed up. 
+Login_user(user, remember=True) will here log the user in, after he has been sucessfully signed up. Therefore, this function is crucial for an authentication functionality in your web app. 
 
 Now we will go to the logout function in *auth.py*:
 
 ```python
 @auth.route('/logout')
-@login_required # add, this decorator makes sure that the user needs to login, before it can logout
+@login_required # add, this decorator makes sure that the user needs to login, before it can logout through the route
 def logout():
     logout_user() #add
     return redirect(url_for('auth.login'))#add
 ```
-After the user has been signed out, he will be redirected to the Login page. 
-The logout_user() function...
+After the user has been signed out, he will now be redirected to the Login page through the url_for function (vgl. Python 2021b). 
+The logout_user() function end the session and also any session data that is linked to the user that was logged in before. The current_user user object is then removed, and changed into an anonymous user (vgl. Python 2021b). 
 
 Now go to view.py:
 
@@ -872,15 +880,15 @@ views = Blueprint('views', __name__)
 def home(): 
     return render_template("home.html") 
 ```
-We now add the login_required decorator, so that only a logged in User can go into the home page where alle the notes are listed. 
+We now add the login_required decorator, so that only a logged in user can go into the home page where alle the notes are listed. 
 
-We need to tell Flask how we actually login a user, we will do that in the __ init__.py file.
+Moreover, we need to tell Flask how we actually login a user, we will do that in the __ init__.py file.
 
 ```python
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy 
 from os import path 
-from flask_login import LoginManager#add
+from flask_login import LoginManager #add
 
 db = SQLAlchemy() 
 DB_NAME = "database.db"
@@ -906,18 +914,18 @@ def create_database(app):
         print('Created Database!')
 
 #add from here
-    login_manager = LoginManager()
-    login_manager.login_view = 'auth.login'
-    login_manager.init_app(app)
+    login_manager = LoginManager() #instatiate
+    login_manager.login_view = 'auth.login' 
+    login_manager.init_app(app) #initialized
 
 @login_manager.user_loader
-    def load_user(id):
+    def load_user(id): #
         return User.query.get(int(id))
 #until here
 ```
-We added LoginManager. @login_manager.user_loader is telling flask how we load a user. The query will by default look for the id of the user. Now I can access the Home Page if I am logged in. If I am not logged in I cannot see the notes from the Home Page.
+We added LoginManager through the Flask-Login extension and can now use methods to manage our login management. Firstly, we instatiated and initialized the extension into our code. Moreover, with *login_view* we set the view for our Login, which will here be *auth.login* (vgl. Herbert 2021). With the function load_user() we can give out a user object from the database which is associated with the id in the current session. For that we use the *User.query.get()* method which finds the User object with the primary key from the integer type (vgl. Herbert 2021). Load_user() must be implemented by our web app as this function is a must for the Flask-Login extension (vgl. freeCodeCamp.org 2019).
 
-Now we want to change the navbar to so that it only shows the correct icons, when logged in. For that we want to check if the user is logged in. The current_user that was addded in view.py, is going to detect if a user is logged in or not. If the user is logged in current_user will give us all the information about the user, like the name, notes and email. If the user is not logged in then it will tell us that the current user is an anonymous user and is not known because he is not signed in. 
+Now we want to change the navbar to so that it only shows the correct icons, when logged in. For that we want to check if the user is logged in. The current_user that was addded in view.py, is going to detect if a user is logged in or not. If the user is logged in current_user will give us all the information about the user, like the name, notes and email (vgl. How to track the current user in flask-login? n.d.). If the user is not logged in then it will tell us that the current user is an anonymous user and is not known because he is not logged in (vgl. How to track the current user in flask-login? n.d.). 
 
 For that go to our view.py file. 
 
@@ -933,7 +941,7 @@ views = Blueprint('views', __name__)
 def home(): 
     return render_template("home.html", user=current_user)# add 
 ```
-With current_user added to the home page, we are able to reference our current user and check if it is autheticated. 
+With current_user now added to the home page, we are able to reference our current user and check if it is authenticated. 
 
 Inside our base.html template we will go to the navbar. 
 
@@ -956,14 +964,14 @@ Inside our base.html template we will go to the navbar.
         </div>
       </nav>
 ```
-If our user is authenticated (logged in) we will only show the Home and the Logout. If the User is logged out it will only show login and sign up. 
+Through the Flask template syntax for if statements, we check if the user is actually authenticated. If our user is logged in we will only show the Home and the Logout. Additionally, is_authenticated will then be set to True. This is important, as only authenticated users fulfill the criteria of login_required (vgl. Flask-Login — Flask-Login 0.7.0 documentation n.d.). If the user is logged out it will only show Login and Sign up and therefore be False in the is_authenticated attribute (vgl. Flask-Login — Flask-Login 0.7.0 documentation n.d.). 
 
-Now go to auth.py and look at the log in and sign up render_template. 
+Now go to auth.py and look at the login and sign up render_template() function, where we give the current_user information over, in order to continue to work with it in the HTML templates. 
 
 ```python
     return render_template("login.html", user=current_user) # look at this
 ```
-and this
+
 
 ```python
     return render_template("sign_up.html", user=current_user) # look at this
@@ -972,7 +980,7 @@ and this
 ---
 ## 7. Add Notes
 ---
-Firstly, go to home.html and copy this code.
+Firstly, go to *home.html* and copy this code.
 
 
 ```html
@@ -998,7 +1006,7 @@ Firstly, go to home.html and copy this code.
 </form>
         {% endblock %}
 ```
-The List allows me to show all the notes. 
+The unordered list allows to attach list elements (our notes) and also to attach an id for it. Moreover, we have a submit button for our notes. 
 
 Now go to views.py:
 
@@ -1027,7 +1035,11 @@ def home():
 
     return render_template("home.html", user=current_user)
 ````
+If the user has submitted a form in the input field and submitted it through the submit button. Moreover, the length of the notes is needs to be more than 1 character otherwise the user gets a message flashing. But if the note is not too short, a Note object (we needs to import it from the Note model) will be created and linked to the current user and his id. The new note will then be commited to our Note database. Additionally, it will show a green message for the user who succesfully added his note. 
 
+---
+## Follow-Ups
+---
 
 ---
 ## Sources
@@ -1050,3 +1062,9 @@ def home():
 - Flask-Login — Flask-Login 0.7.0 documentation (n.d.): [online] https://flask-login.readthedocs.io/en/latest/#how-it-works.
 - What is the UserMixin in Flask? (n.d.): Stack Overflow, [online] https://stackoverflow.com/questions/63231163/what-is-the-usermixin-in-flask.
 - Herbert, Anthony (2021): How To Add Authentication to Your App with Flask-Login, in: DigitalOcean, [online] https://www.digitalocean.com/community/tutorials/how-to-add-authentication-to-your-app-with-flask-login.
+- 10.9. Sessions — Fundamentals of Web Programming (n.d.): [online] https://runestone.academy/ns/books/published/webfundamentals/Flask/sessions.html.
+- Quickstart — Flask Documentation (2.1.x) (n.d.): [online] https://flask.palletsprojects.com/en/2.1.x/quickstart/#rendering-templates.
+- Bootstrap Alerts (n.d.): [online] https://www.w3schools.com/bootstrap/bootstrap_alerts.asp.
+- Quickstart — Flask Documentation (2.1.x) (n.d.): [online] https://flask.palletsprojects.com/en/2.1.x/quickstart/#verifying-password-hashes.
+-freeCodeCamp.org (2019): Learn Flask for Python - Full Tutorial, [YouTube] https://www.youtube.com/watch?v=Z1RJmh_OqeA.
+- How to track the current user in flask-login? (n.d.): Stack Overflow, [online] https://stackoverflow.com/questions/19274226/how-to-track-the-current-user-in-flask-login.
