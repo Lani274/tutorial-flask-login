@@ -4,9 +4,6 @@ from .models import Note
 from . import db
 import json
 
-
-# es hat viele routes das bedeutet Blueprint
-
 views = Blueprint('views', __name__)
 
 @views.route('/', methods=['GET', 'POST']) #decorator

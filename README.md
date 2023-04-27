@@ -32,8 +32,9 @@ I tested the code on my current Windows 11 machine and I will show in this tutor
     - [Database Models ](#concept1)
     - [Creating New User Accounts](#concept2)
     - [Adding the Login Method](#concept3)
+7. [Add Notes](#concept)
 
-7. [Follow-Ups & Sources](#sources)
+8. [Follow-Ups & Sources](#sources)
 
 ---
 ## 1. Learning Objective  
@@ -764,9 +765,9 @@ def login():
 
     return render_template("login.html", user=current_user)
 ```
-The user now can sign up but we also want the user to log in with an already existing account. Firstly, we want to get the email and the password from the form. Then we want to check if the email is actually valid and that an user belongs to this email. In the User model we will filter_by() with an query, that finds all the users that have the email, that was in the field. If we then actually find an user, we need to check if the password typed in is equal to the hashed one. If the user is logged in successfully then it will redirect the user to the home page.  
+The user can sign up now but we also want the user to log in with an already existing account. Firstly, we want to get the email and the password from the form. Then we want to check if the email is actually valid and that an user belongs to this email. In the User model we will filter_by() with an query, that finds all the users that have the email, that was in the field. If we then actually find an user, we need to check if the password typed in is equal to the hashed one. If the user is logged in successfully then it will redirect the user to the home page.  
 
-What we want to do now is to only let a logged in user access the home page with his personal notes. Moreover, we want the Login and Sign Up in the navbar to go away, if the User is already logged in, so that it will only show Home and Logout. 
+What we want to do now is to only let a logged in user access the home page with his personal notes. Moreover, we want the *Login* and *Sign Up* in the navbar to disappear, if the User is already logged in, so that it will only show Home and Logout. 
 
 For that go to your *auth.py* file
 ```python
@@ -785,11 +786,15 @@ def login():
         email = request.form.get('email')
         password = request.form.get('password')
 
+        # Get the user object
         user = User.query.filter_by(email=email).first()
         if user:
+            # check password
             if check_password_hash(user.password, password):
                 flash('Logged in successfully!', category='success')
-                login_user(user, remember=True)
+                # login of the user
+                login_user(user, remember=True) #add
+                # after login bring the user to the home page
                 return redirect(url_for('views.home'))
             else: 
                 flash('Incorrect password, try again.', category='error')
@@ -799,12 +804,229 @@ def login():
     return render_template("login.html", user=current_user)
 ```
 
-We needed UserMixin before so that we can have all the information of the current_user that we added through the Flask Login Module. 
+The current_user object is connected to the UserMixin from models.py and allows the save all the information of the current logged in user.  
+
+Moreover, the login_user function is used to log a user into our application. It attaches the user's ID to the user object. The login_user funtcion always requires an user object which has an id, in order to store the id in the session (vgl. Herbert 2021). 
+
+Now go to your *auth.py* file and look at the signup: 
+
+```python
+@auth.route(/sign-up, methods=['GET', 'POST'])
+def sign_up():
+         if request.method == 'POST':
+         email = request.form.get('email')
+         first_name = request.form.get('firstName')
+         password1 = request.form.get('password1')
+         password2 = request.form.get('password2')
+
+         user= User.query.filter_by(email=email).first()
+
+         if user: 
+             flash('Email already exists.', category='error')
+
+         elif len(email) < 4:
+             flash('Email must be greater than 3 characters.', category='error')
+         elif len(first_name) < 2:
+             flash('First name must be greater than 1 character.', category='error')
+         elif password1 != password2:
+             flash('Passwords dont match.', category='error')
+         elif len(password1) < 7:
+             flash('Password must be at least 7 characters.', category='error')
+         else: 
+            
+             new_user= User(email=email, first_name=first_name, password=generate_password_hash(password1, method='sha256'))
+             
+             db.session.add(new_user)
+             db.session.commit()
+             login_user(user, remember=True) # add, if not done before
+             flash('Account created!', category='success')
+             return redirect(url_for('views.home')) 
+```
+
+login_user(user, remember=True) will here log the User in, after he has been sucessfully signed up. 
+
+Now we will go to the logout function in *auth.py*:
+
+```python
+@auth.route('/logout')
+@login_required # add, this decorator makes sure that the user needs to login, before it can logout
+def logout():
+    logout_user() #add
+    return redirect(url_for('auth.login'))#add
+```
+After the user has been signed out, he will be redirected to the Login page. 
+The logout_user() function...
+
+Now go to view.py:
+
+```python
+
+from flask import Blueprint
+,render template 
+from flask_login import login_required, current_user #add
+
+views = Blueprint('views', __name__)
+
+@views.route('/')
+@login_required #add
+def home(): 
+    return render_template("home.html") 
+```
+We now add the login_required decorator, so that only a logged in User can go into the home page where alle the notes are listed. 
+
+We need to tell Flask how we actually login a user, we will do that in the __ init__.py file.
+
+```python
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy 
+from os import path 
+from flask_login import LoginManager#add
+
+db = SQLAlchemy() 
+DB_NAME = "database.db"
+
+def create_app(): 
+    app = Flask(__name__) 
+    app.config['SECRET_KEY'] = 'dsjkajeijw' 
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
+    db.init_app(app) 
+
+    from .views import views
+    from .auth import auth
+    app.register_blueprint(views, url_prefix='/')
+    app.register_blueprint(auth, url_prefix='/')
+
+    from .models import User, Note 
+    
+    return app
+
+def create_database(app): 
+    if not path.exists('webapp/' +  DB_NAME):
+        db.create_all(app=app)
+        print('Created Database!')
+
+#add from here
+    login_manager = LoginManager()
+    login_manager.login_view = 'auth.login'
+    login_manager.init_app(app)
+
+@login_manager.user_loader
+    def load_user(id):
+        return User.query.get(int(id))
+#until here
+```
+We added LoginManager. @login_manager.user_loader is telling flask how we load a user. The query will by default look for the id of the user. Now I can access the Home Page if I am logged in. If I am not logged in I cannot see the notes from the Home Page.
+
+Now we want to change the navbar to so that it only shows the correct icons, when logged in. For that we want to check if the user is logged in. The current_user that was addded in view.py, is going to detect if a user is logged in or not. If the user is logged in current_user will give us all the information about the user, like the name, notes and email. If the user is not logged in then it will tell us that the current user is an anonymous user and is not known because he is not signed in. 
+
+For that go to our view.py file. 
+
+```python
+from flask import Blueprint
+,render template 
+from flask_login import login_required, current_user
+
+views = Blueprint('views', __name__)
+
+@views.route('/')
+@login_required 
+def home(): 
+    return render_template("home.html", user=current_user)# add 
+```
+With current_user added to the home page, we are able to reference our current user and check if it is autheticated. 
+
+Inside our base.html template we will go to the navbar. 
+
+```html
+
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar">
+              <span class="navbar-toggler-icon"></span>
+          </button>
+        <div class="collapse navbar-collapse" id="navbar">
+          <div class="navbar-nav">
+            {% if user.is_authenticated %} #add this
+            <a class="nav-item nav-link" id="home" href="/">Home</a>
+            <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>
+            {% else %} #add
+            <a class="nav-item nav-link" id="login" href="/login">Login</a>
+            <a class="nav-item nav-link" id="signUp" href="/sign-up">Sign Up</a>
+            {% endif %}#add
+          </div>
+        </div>
+      </nav>
+```
+If our user is authenticated (logged in) we will only show the Home and the Logout. If the User is logged out it will only show login and sign up. 
+
+Now go to auth.py and look at the log in and sign up render_template. 
+
+```python
+    return render_template("login.html", user=current_user) # look at this
+```
+and this
+
+```python
+    return render_template("sign_up.html", user=current_user) # look at this
+```
+
+---
+## 7. Add Notes
+---
+Firstly, go to home.html and copy this code.
 
 
+```html
+{% extends "base.html" %} {% block title %}Home{% endblock %}
+{% block content %}
+
+<h1 align="center">Notes</h1>
+<ul class="list-group list-group-flush" id="notes">
+        {% for note in user.notes %} 
+        <li class="list-group-item">{{ note.data }}
+                <button type="button" class="close" onClick="deleteNote({{ note.id }})">
+                        <span aria-hidden="true">&times;</span>
+                </button>
+        </li>
+        {% endfor %}
+</ul>
+<form method="POST">
+        <textarea name="note" id="note" class="form-control"></textarea>
+        <br />
+        <div align="center">
+                <button type="submit" class="btn btn-primary">Add Note</button>
+        </div>
+</form>
+        {% endblock %}
+```
+The List allows me to show all the notes. 
+
+Now go to views.py:
 
 
+```python
+from flask import Blueprint, render_template, request, flash, jsonify
+from flask_login import login_required, current_user
+from .models import Note
+from . import db
+import json
 
+views = Blueprint('views', __name__)
+@views.route('/', methods=['GET', 'POST']) #decorator
+@login_required
+def home(): 
+    if request.method == 'POST':
+        note = request.form.get('note')
+
+        if len(note) <= 1:
+            flash('Note is too short!', category='error')
+        else:
+            new_note = Note(data=note, user_id=current_user.id)
+            db.session.add(new_note)
+            db.session.commit()
+            flash('Note added!', category='success')
+
+    return render_template("home.html", user=current_user)
+````
 
 
 ---
