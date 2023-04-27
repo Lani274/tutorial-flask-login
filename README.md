@@ -34,21 +34,14 @@ I tested the code on my current Windows 11 machine and I will show in this tutor
     - [Adding the Login Method](#concept3)
 7. [Add Notes](#concept)
 
-8. [Follow-Ups & Sources](#sources)
+8. [Follow-Ups ](#sources)
+9. [Sources](#sources)
 
 ---
 ## 1. Learning Objective  
 ---
 
 The Learning Objectives are firstly to set up Python and Visual Studio Code. Then to create a running  Flask application that demonstrates and visualizes how Flask-Login can be used. By the end of this tutorial, you should have a website, mostly written with Python, where a user can login and logout. Therefore, the user needs an account which is stored in a database. In addition, the user can save notes in a list and only the notes of the logged in user are displayed. The goal is that you will not only understand Flask-Login, but also know how basic-mechanisms of Python are used. Come back here as often as you need, it serves as a beginner tutorial which can be implemented in  any web app. Through this happy path you will understand how Flask-Login can be implemented into a web app. So, let's dive in!
-
-To-Do:
-- [ ] Setting up Python and Visual Studio Code
-- [ ] Launching a web server
-- [ ] Create a user account
-- [ ] Store this data in a database
-- [ ] Login into the user account and logout 
-- [ ] Associate notes with a specific user
 
 ---
 ## 2. Assumptions
@@ -58,14 +51,22 @@ I assume that you don't have Visual Studio Code installed on your computer and s
 
 It's best if you code while you read the tutorial, therefore you will implement a happy path while you are discovering new knowledge about Flask-Login.
 
-### What's in Scope (3b):
+### What's in Scope:
 
-- Flask built-in 
-
+- [ ] How to set up Python and Visual Studio Code
+- [ ] How to launch a web server
+- [ ] How to create a user account with [Flask-Login extension](https://pypi.org/project/Flask-Login/)
+- [ ] How to store data in a database with ORM (object-relational mapping) frameworks such as [SQLAlchemy](https://www.sqlalchemy.org/)
+- [ ] How to create a user account with [Flask-Login extension](https://pypi.org/project/Flask-Login/)
+- [ ] How to login into the user account and logout 
+- [ ] How to associate notes with a specific user
 
 ### What's out of Scope:
-
-- 
+- How to get started with Git and GitHub workflows
+- Layouting and styling libraries such as Bootstrap
+- HTML (Hypertext Markup Language) and CSS (Cascading Style Sheets) for the layout and presentation of web content 
+- HTTP (Hypertext Transfer Protocoll) request with the methods GET and POST
+- Flask-Flash and the Flask built-in flashing of messages
 
 ---
 ## 3. Setup
@@ -265,7 +266,7 @@ def create_app():
     
     return app
 ```
-We are now basically importing the Blueprint object from *views.py* which is called views and also from *auth.py* which is called auth. Then we need to register them into our flask application with register_blueprint(). When a Flask Blueprint is registered, the application is extended with its contents (vgl. Python 2021). To each registered Blueprint, we also configure a URL prefix, which here is the root URL. 
+We are now basically importing the Blueprint object from *views.py* which is called views and also from *auth.py* which is called auth. Then we need to register them into our flask application with register_blueprint() (vgl. Python 2021). When a Flask Blueprint is registered, the application is extended with its contents (vgl. Python 2021). To each registered Blueprint, we also configure a URL prefix, which here is the root URL. 
 
 Back to our *auth.py* file extend with this code: 
 
@@ -1035,11 +1036,18 @@ def home():
 
     return render_template("home.html", user=current_user)
 ````
-If the user has submitted a form in the input field and submitted it through the submit button. Moreover, the length of the notes is needs to be more than 1 character otherwise the user gets a message flashing. But if the note is not too short, a Note object (we needs to import it from the Note model) will be created and linked to the current user and his id. The new note will then be commited to our Note database. Additionally, it will show a green message for the user who succesfully added his note. 
+If the user has submitted a form in the input field and submitted it through the submit button. Moreover, the length of the notes is needs to be more than 1 character otherwise the user gets a message flashing. But if the note is not too short, a Note object (we needed to import it from the Note model) will be created and linked to the current user and his id. The new note will then be commited to our Note database. Additionally, it will show a green message for the user who succesfully added his note. 
 
 ---
 ## Follow-Ups
 ---
+- [Git & GitHub](https://docs.github.com/en/get-started/quickstart). 
+- [StackOverflow](https://stackoverflow.com/questions).
+- [Blueprint](https://realpython.com/flask-blueprint/#what-a-flask-application-looks-like)
+- [HTTP request](https://www.ionos.de/digitalguide/hosting/hosting-technik/http-request-erklaert/)
+- [Message Flashing](https://flask.palletsprojects.com/en/2.0.x/patterns/flashing/)
+- [HTML & CSS](https://www.w3schools.com/html/html_css.asp)
+- [Jinja2 Templates](https://jinja.palletsprojects.com/en/3.1.x/templates/)
 
 ---
 ## Sources
